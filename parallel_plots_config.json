@@ -19,7 +19,7 @@
 		"Water Systems (GJ)": "end_uses.water_systems_gj",
 		"Water Systems_water (m3)": "end_uses.water_systems_water_m3",
 		"Refrigeration (GJ)": "end_uses.refrigeration_gj",
-		"Generators (GJ): "end_uses.generators_gj",
+		"Generators (GJ)": "end_uses.generators_gj",
 		"TotalEndUses(GJ)": "end_uses.total_end_uses_gj",
 		"TotalEndUsesWater(m3)": "end_uses.total_end_uses_water_m3"
 		},
