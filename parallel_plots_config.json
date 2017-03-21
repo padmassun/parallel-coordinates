@@ -1,4 +1,4 @@
-{
+var parallel_plots_config = {
 	"all": {
 		"Building Type": "building_type",
 		"HDD": "geography.hdd",
@@ -22,22 +22,22 @@
 		"Generators (GJ)": "end_uses.generators_gj",
 		"TotalEndUses(GJ)": "end_uses.total_end_uses_gj",
 		"TotalEndUsesWater(m3)": "end_uses.total_end_uses_water_m3"
-		},
-"title":{
-			"BuildingType":"building_type",
-			"HDD":"geography.hdd",
-			"CDD":"geography.cdd",
-			"ClimateZone":"geography.climate_zone",
-			"EndUsesHeating(GJ)":"end_uses.heating_gj",
-			"EndUsesCooling(GJ)":"end_uses.cooling_gj",
-			"InteriorLighting(GJ)":"end_uses.interior_lighting_gj",
-			"InteriorEquipment(GJ)": "end_uses.interior_equipment_gj",
-			"Fans(GJ)": "end_uses.fans_gj",
-			"Pump(GJ)": "end_uses.pumps_gj",
-			"HeatRejection(GJ)": "end_uses.heat_rejection_gj",
-			"WaterSystems(GJ)": "end_uses.water_systems_gj",
-			"WaterSystems_water(m3)": "end_uses.water_systems_water_m3",
-			"TotalEndUses(GJ)": "end_uses.total_end_uses_gj",
-			"TotalEndUsesWater(m3)": "end_uses.total_end_uses_water_m3"
-		} 
+	},
+	"title": {
+		"BuildingType": "building_type",
+		"HDD": "geography.hdd",
+		"CDD": "geography.cdd",
+		"ClimateZone": "geography.climate_zone",
+		"EndUsesHeating(GJ)": "end_uses.heating_gj",
+		"EndUsesCooling(GJ)": "end_uses.cooling_gj",
+		"InteriorLighting(GJ)": "end_uses.interior_lighting_gj",
+		"InteriorEquipment(GJ)": "end_uses.interior_equipment_gj",
+		"Fans(GJ)": "end_uses.fans_gj",
+		"Pump(GJ)": "end_uses.pumps_gj",
+		"HeatRejection(GJ)": "end_uses.heat_rejection_gj",
+		"WaterSystems(GJ)": "end_uses.water_systems_gj",
+		"WaterSystems_water(m3)": "end_uses.water_systems_water_m3",
+		"TotalEndUses(GJ)": "end_uses.total_end_uses_gj",
+		"TotalEndUsesWater(m3)": "end_uses.total_end_uses_water_m3"
+	}
 }

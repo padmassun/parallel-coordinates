@@ -9,12 +9,15 @@
 <script src="lib/d3.js"></script>
 <script src="lib/sylvester.js"></script>
 <script src="lib/d3.parcoords.js"></script>
-
+<script src="lib/jquery-1.7.1.min.js"></script>
+<script src="parallel_plots_config.json"></script>
 <body>
 <div id="example" class="parcoords" style="width:1500px;height:500px"></div>
 </body>
 <script>
-
+function get_json (file) {
+	
+};
 
 d3.json("simulations.json",function(json)
 {
@@ -22,8 +25,8 @@ d3.json("simulations.json",function(json)
 	{
 		//may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
 		//based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
-		title = d3.json("parallel_plots_config.json", function(config){return config.title});
-		console.log(title);
+		//parallel_plots_config.json
+		title = parallel_plots_config.title;
 		data = []
 		
 		for (i = 0; i < json.length; i++){
