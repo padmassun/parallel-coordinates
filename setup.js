@@ -1,8 +1,9 @@
 function setup() {
+    d3.csv("./data/output.csv",function(csv_data){console.log(csv_data)});
     //console.log(unparsed_data(json));
     raw_data = JSON.parse(get_file("./data/simulations.json"));
     data = get_unparsed_data(raw_data)
-    console.log(data);
+    //console.log(data);
     setup_canvas(data)
 }
 
@@ -33,7 +34,7 @@ function setup_canvas(data) {
         .smoothness(0.2)
         .bundlingStrength(0)
         .data(data)
-        .color(function (d) { return colorgen(d[0]); })
+        .color(function (d) {console.log(d); return colorgen(d.BuildingType); })
         .mode("queue")
         .render()
         .createAxes()
@@ -41,6 +42,7 @@ function setup_canvas(data) {
 
     parcoords.svg.selectAll("text")
         .style("font", "10px sans-serif");
+        console.log(d3.selectAll("axis"));
 
 }
 
@@ -52,11 +54,12 @@ function get_unparsed_data(json) {
     title = config_file.title;
     data = []
     for (i = 0; i < json.length; i++) {
-        x = []
+        x = {};
         for (var key in title) {
             if (title.hasOwnProperty(key)) {
-                command = "x.push(json[i]." + title[key] + ")"
-                eval(command)
+                command = "x[\""+key+"\"] = "+"json[i]."+title[key];
+                //console.log(command);
+                eval(command);
             }
         }
         //console.log(x);
