@@ -1,4 +1,4 @@
-var parallel_plots_config = {
+{
 	"all": {
 		"Building Type": "building_type",
 		"HDD": "geography.hdd",
