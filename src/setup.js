@@ -32,7 +32,7 @@ function setup_canvas(data) {
             "#651067", "#329262", "#5574a6", "#3b3eac"
         ]);
     var red_to_cyan = d3.scale.linear()
-        .domain([3000,8000])
+        .domain([3000, 8000])
         .range(["cyan", "red"]);
 
     var color = function (d) { /*console.log(d);*/
@@ -44,7 +44,11 @@ function setup_canvas(data) {
         }
 
     };
-
+    // slickgrid needs each data element to have an id
+    //console.log(data);
+    data.forEach(function (d, i) {
+        d.id = d.id || i;
+    });
     var parcoords = d3.parcoords()("#chart")
         .margin({
             top: 100,
@@ -66,6 +70,95 @@ function setup_canvas(data) {
         .brushMode("1D-axes-multi");
 
     //console.log(parcoords.dimensions())
+
+    var column_keys = d3.keys(data[0]);
+    var columns = column_keys.map(function (key, i) {
+        return {
+            id: key,
+            name: key,
+            field: key,
+            sortable: true
+        }
+    });
+
+    var options = {
+        enableCellNavigation: true,
+        enableColumnReorder: false,
+        multiColumnSort: false
+    };
+
+    var dataView = new Slick.Data.DataView();
+    var grid = new Slick.Grid("#grid", dataView, columns, options);
+    var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+
+    // wire up model events to drive the grid
+    dataView.onRowCountChanged.subscribe(function (e, args) {
+        grid.updateRowCount();
+        grid.render();
+    });
+
+    dataView.onRowsChanged.subscribe(function (e, args) {
+        grid.invalidateRows(args.rows);
+        grid.render();
+    });
+
+    // column sorting
+    var sortcol = column_keys[0];
+    var sortdir = 1;
+
+    function comparer(a, b) {
+        var x = a[sortcol],
+            y = b[sortcol];
+        return (x == y ? 0 : (x > y ? 1 : -1));
+    }
+
+    // click header to sort grid column
+    grid.onSort.subscribe(function (e, args) {
+        sortdir = args.sortAsc ? 1 : -1;
+        sortcol = args.sortCol.field;
+
+        if ($.browser.msie && $.browser.version <= 8) {
+            dataView.fastSort(sortcol, args.sortAsc);
+        } else {
+            dataView.sort(comparer, args.sortAsc);
+        }
+    });
+
+    // highlight row in chart
+    grid.onMouseEnter.subscribe(function (e, args) {
+        // Get row number from grid
+        var grid_row = grid.getCellFromEvent(e).row;
+
+        // Get the id of the item referenced in grid_row
+        var item_id = grid.getDataItem(grid_row).id;
+        var d = parcoords.brushed() || data;
+
+        // Get the element position of the id in the data object
+        elementPos = d.map(function (x) {
+            return x.id;
+        }).indexOf(item_id);
+
+        // Highlight that element in the parallel coordinates graph
+        parcoords.highlight([d[elementPos]]);
+    });
+
+    grid.onMouseLeave.subscribe(function (e, args) {
+        parcoords.unhighlight();
+    });
+
+    // fill grid with data
+    gridUpdate(data);
+
+    // update grid on brush
+    parcoords.on("brush", function (d) {
+        gridUpdate(d);
+    });
+
+    function gridUpdate(data) {
+        dataView.beginUpdate();
+        dataView.setItems(data);
+        dataView.endUpdate();
+    };
 }
 
 function get_filtered_data(option) {
