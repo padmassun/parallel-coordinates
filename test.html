@@ -29,26 +29,31 @@
 	body,
 	html {
 		margin: 0;
+		overflow: hide;
 		height: 100%;
 		width: 100%;
-		overflow: hidden;
 		font-size: 12px;
 	}
 
-	#grid,
 	#pager {
 		position: fixed;
 		width: 100%;
+		bottom: 30%;
+		height: 20px;
+	}
+
+	#bldgType_selector {
+		position: fixed;
+		width: 100%;
+		bottom: 35%;
+		height: 20px;
 	}
 
 	#grid {
-		bottom: 0;
-		height: 300px;
-	}
-
-	#pager {
-		bottom: 306px;
-		height: 20px;
+		position: fixed;
+		width: 100%;
+		bottom: 0px;
+		height: 30%;
 	}
 
 	.slick-row:hover {
@@ -58,13 +63,17 @@
 </style>
 
 <body>
-	<div id="chart" class="parcoords" style="width:1500px;height:500px"></div>
-	<label for="bldgType">Building Types:</label>
-	<select id="bldgType"></select>
-	<button id="update_bldgType">Update Plot</button>
-	<button id="btnReset">Reset plot</button>
+	<div id="chart" class="parcoords" style="width:1500px; height:500px; overflow:auto;"></div>
+
+
+	<div align="center" id="bldgType_selector">
+		<label for="bldgType">Building Types:</label>
+		<select id="bldgType"></select>
+		<button id="update_bldgType">Update Plot</button>
+		<button id="hideData">Show/Hide Data table</button>
+	</div>
 	<div>
-		<p>Tooltip: Scrolling on top of the axis name rotates it</p>
+		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
 	</div>
 	<div id="grid"></div>
 	<div id="pager"></div>

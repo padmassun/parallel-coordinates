@@ -13,6 +13,21 @@ function setup() {
     //setup_canvas(data)
 
     update_plot_with_options()
+
+
+    var button = document.getElementById('hideData');
+
+    button.onclick = function () {
+        var grid = document.getElementById('grid');
+        var pager = document.getElementById('pager');
+        if (grid.style.display !== 'none') {
+            grid.style.display = 'none';
+            pager.style.display = 'none';
+        } else {
+            grid.style.display = 'block';
+            pager.style.display = 'block';
+        }
+    };
 }
 
 function get_file(name) {
@@ -35,8 +50,11 @@ function setup_canvas(data) {
         .domain([3000, 8000])
         .range(["cyan", "red"]);
 
-    var color = function (d) { /*console.log(d);*/
+    var color = function (d) {
+        //console.log(d);
+        //console.log(d3.select("#pager"));
         option = d3.select("#bldgType").property("value")
+
         if (option == "Select All") {
             return color_by_bldg_type(d["Building Type"]);
         } else {
@@ -49,12 +67,15 @@ function setup_canvas(data) {
     data.forEach(function (d, i) {
         d.id = d.id || i;
     });
+
     var parcoords = d3.parcoords()("#chart")
+        //.height(d3.max([document.body.clientHeight - 100, 200]))
+        .height(500)
         .margin({
-            top: 100,
+            top: 50,
             left: 150,
             right: 50,
-            bottom: 20
+            bottom: 16
         })
         .interactive()
         .rotateLabels(true)
@@ -68,9 +89,11 @@ function setup_canvas(data) {
         .render()
         .createAxes()
         .brushMode("1D-axes-multi");
-
+    console.log(document.body.clientHeight + " = document.body.clientHeight")
+    console.log(parcoords.height() + " = parcoords.height()")
     //console.log(parcoords.dimensions())
-
+    var objDiv = document.getElementById("chart");
+    objDiv.scrollTop = objDiv.scrollHeight;
     var column_keys = d3.keys(data[0]);
     var columns = column_keys.map(function (key, i) {
         return {
@@ -159,6 +182,7 @@ function setup_canvas(data) {
         dataView.setItems(data);
         dataView.endUpdate();
     };
+
 }
 
 function get_filtered_data(option) {
@@ -171,7 +195,7 @@ function get_filtered_data(option) {
     if (option != "Select All") {
         delete title["Building Type"]
     }
-    console.log(title);
+    //console.log(title);
     data = []
     for (i = 0; i < json.length; i++) {
         x = {};
@@ -194,7 +218,7 @@ function get_filtered_data(option) {
 function setup_options() {
     options = config_file.buildings;
     options.unshift("Select All")
-    console.log(options)
+    //console.log(options + " < options in setup_options")
     var bldgType = d3.select('#bldgType')
     bldgType.selectAll('option')
         .data(options)
@@ -207,9 +231,11 @@ function setup_options() {
 }
 
 function update_plot_with_options() {
+
     d3.select('#update_bldgType').on('click', function () {
+        //console.log(d3.select('#update_bldgType') + "<< select")
         option = d3.select("#bldgType").property("value")
-        console.log(option + " < Option");
+        //console.log(option + " < Option");
         data = get_filtered_data(option)
         d3.selectAll("g > *").remove()
         setup_canvas(data)
