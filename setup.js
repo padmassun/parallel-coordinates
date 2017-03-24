@@ -73,9 +73,11 @@ function setup_canvas(data) {
     if (bldgType == "Select All") {
         dimensions = Object.keys(JSON.parse(JSON.stringify(config_file)).title);
     } else {
-        dimensions = Object.keys(JSON.parse(JSON.stringify(config_file)).title);
+        console.log(dimensions)
+        dimensions = JSON.parse(JSON.stringify(config_file)).title;
         delete dimensions["Building Type"]
-    }
+        dimensions = Object.keys(dimensions)
+     }
 
     if (view_option != "View All") {
         console.log("dimensions = config_file.views[\"" + view_option + "\"]")
@@ -114,12 +116,10 @@ function setup_canvas(data) {
         .brushMode("1D-axes-multi");
     //console.log(document.body.clientHeight + " = document.body.clientHeight")
     //console.log(parcoords.height() + " = parcoords.height()")
-    /*dafault_dimensions = parcoords.dimensions()
+    dafault_dimensions = parcoords.dimensions()
     console.log(dafault_dimensions)
     console.log("dafault_dimensions ^")
-    console.log(dimensions)
-    console.log("my_dimensions ^")
-    */
+
     var objDiv = document.getElementById("chart");
     objDiv.scrollTop = objDiv.scrollHeight;
     var column_keys = d3.keys(data[0]);
