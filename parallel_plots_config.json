@@ -55,5 +55,18 @@
 		"SmallOffice",
 		"RetailStripmall",
 		"Warehouse"
+	],
+	"views": {
+		"Archetect": ["HDD", "Climate Zone"],
+		"Mech eng": ["CDD", "Climate Zone"],
+		"Elec eng": ["HDD", "CDD", "Climate Zone"]
+	},
+	"view_types": [
+		"View All",
+		"Archetect",
+		"Mech eng",
+		"Elec eng"
+		
 	]
+
 }
