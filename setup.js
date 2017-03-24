@@ -1,4 +1,4 @@
-config_file = JSON.parse(get_file("parallel_plots_config.json"));
+const config_file = JSON.parse(get_file("parallel_plots_config.json"));
 //options = get_options()
 function setup() {
     setup_options()
@@ -13,10 +13,14 @@ function setup() {
     //setup_canvas(data)
 
     update_plot_with_options()
+    toggle_data_hide()
 
 
+
+}
+
+function toggle_data_hide() {
     var button = document.getElementById('hideData');
-
     button.onclick = function () {
         var grid = document.getElementById('grid');
         var pager = document.getElementById('pager');
@@ -62,6 +66,23 @@ function setup_canvas(data) {
         }
 
     };
+    view_option = d3.select("#viewType").property("value")
+    var dimensions = []
+
+    bldgType = d3.select("#bldgType").property("value")
+    if (bldgType == "Select All") {
+        dimensions = Object.keys(JSON.parse(JSON.stringify(config_file)).title);
+    } else {
+        dimensions = Object.keys(JSON.parse(JSON.stringify(config_file)).title);
+        delete dimensions["Building Type"]
+    }
+
+    if (view_option != "View All") {
+        console.log("dimensions = config_file.views[\"" + view_option + "\"]")
+        eval("dimensions = config_file.views[\"" + view_option + "\"]");
+    }
+    console.log(dimensions)
+    console.log("my_dimensions ^")
     // slickgrid needs each data element to have an id
     //console.log(data);
     data.forEach(function (d, i) {
@@ -87,11 +108,18 @@ function setup_canvas(data) {
         })
         .mode("queue")
         .render()
+        .dimensions(dimensions)
+        //.render()
         .createAxes()
         .brushMode("1D-axes-multi");
-    console.log(document.body.clientHeight + " = document.body.clientHeight")
-    console.log(parcoords.height() + " = parcoords.height()")
-    //console.log(parcoords.dimensions())
+    //console.log(document.body.clientHeight + " = document.body.clientHeight")
+    //console.log(parcoords.height() + " = parcoords.height()")
+    /*dafault_dimensions = parcoords.dimensions()
+    console.log(dafault_dimensions)
+    console.log("dafault_dimensions ^")
+    console.log(dimensions)
+    console.log("my_dimensions ^")
+    */
     var objDiv = document.getElementById("chart");
     objDiv.scrollTop = objDiv.scrollHeight;
     var column_keys = d3.keys(data[0]);
@@ -189,13 +217,18 @@ function get_filtered_data(option) {
     //may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
     //based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
     //parallel_plots_config.json 
-    //console.log(config_file);
+    /*console.log("config_file");
+    console.log(config_file);
+    console.log("config_file.title");
+    console.log(config_file.title);
+    */
     json = JSON.parse(get_file("./data/simulations.json"));
-    title = config_file.title;
-    if (option != "Select All") {
-        delete title["Building Type"]
-    }
-    //console.log(title);
+    title = JSON.parse(JSON.stringify(config_file)).title;
+    /*console.log(config_file.title)
+    if (!("Building Type" in title)){
+        title["Building Type"] = config_file.title["Building Type"];
+        console.log("config_file.title[Building Type] = " + config_file.title["Building Type"]);
+    }*/
     data = []
     for (i = 0; i < json.length; i++) {
         x = {};
@@ -228,6 +261,16 @@ function setup_options() {
             return d;
         });
 
+    options = config_file.view_types;
+    var viewType = d3.select('#viewType')
+    viewType.selectAll('option')
+        .data(options)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        });
+
 }
 
 function update_plot_with_options() {
@@ -236,8 +279,10 @@ function update_plot_with_options() {
         //console.log(d3.select('#update_bldgType') + "<< select")
         option = d3.select("#bldgType").property("value")
         //console.log(option + " < Option");
+        var title = {};
         data = get_filtered_data(option)
         d3.selectAll("g > *").remove()
         setup_canvas(data)
+        data = []
     })
 }
