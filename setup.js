@@ -67,24 +67,35 @@ function setup_canvas(data) {
 
     };
     view_option = d3.select("#viewType").property("value")
-    var dimensions = []
+    var dimensions = {}
+    //console.log(JSON.parse(JSON.stringify(config_file)).dimensions)
+    //console.log("JSON.parse(JSON.stringify(config_file)).dimensions")
 
     bldgType = d3.select("#bldgType").property("value")
     if (bldgType == "Select All") {
-        dimensions = Object.keys(JSON.parse(JSON.stringify(config_file)).title);
+        dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
     } else {
         console.log(dimensions)
-        dimensions = JSON.parse(JSON.stringify(config_file)).title;
+        dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
         delete dimensions["Building Type"]
-        dimensions = Object.keys(dimensions)
-     }
+    }
 
     if (view_option != "View All") {
         console.log("dimensions = config_file.views[\"" + view_option + "\"]")
         eval("dimensions = config_file.views[\"" + view_option + "\"]");
     }
-    console.log(dimensions)
-    console.log("my_dimensions ^")
+
+    /*function toObject(arr) {
+        var rv = {};
+        for (var i = 0; i < arr.length; ++i)
+            rv[arr[i]] = {};
+        return rv;
+    }
+
+    console.log(toObject(dimensions))
+    console.log("my_dimensions")*/
+
+
     // slickgrid needs each data element to have an id
     //console.log(data);
     data.forEach(function (d, i) {
@@ -113,12 +124,13 @@ function setup_canvas(data) {
         .dimensions(dimensions)
         //.render()
         .createAxes()
-        .brushMode("1D-axes-multi");
+        .brushMode("1D-axes-multi")
+        .reorderable();
     //console.log(document.body.clientHeight + " = document.body.clientHeight")
     //console.log(parcoords.height() + " = parcoords.height()")
-    dafault_dimensions = parcoords.dimensions()
-    console.log(dafault_dimensions)
-    console.log("dafault_dimensions ^")
+    //dafault_dimensions = parcoords.dimensions()
+    //console.log(JSON.stringify(dafault_dimensions))
+    //console.log("dafault_dimensions ^")
 
     var objDiv = document.getElementById("chart");
     objDiv.scrollTop = objDiv.scrollHeight;
@@ -210,7 +222,6 @@ function setup_canvas(data) {
         dataView.setItems(data);
         dataView.endUpdate();
     };
-
 }
 
 function get_filtered_data(option) {
@@ -276,13 +287,14 @@ function setup_options() {
 function update_plot_with_options() {
 
     d3.select('#update_bldgType').on('click', function () {
+        d3.select("svg > *").remove();
         //console.log(d3.select('#update_bldgType') + "<< select")
         option = d3.select("#bldgType").property("value")
         //console.log(option + " < Option");
         var title = {};
         data = get_filtered_data(option)
-        d3.selectAll("g > *").remove()
+        //console.log(data);
         setup_canvas(data)
-        data = []
+
     })
 }
