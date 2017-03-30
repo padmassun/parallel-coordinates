@@ -1,0 +1,24 @@
+{
+  "name": "parallel-coordinates",
+  "version": "1.0.0",
+  "description": "Creates a parallel coordinate plot for QAQC simulation data",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canmet-energy/parallel-coordinates.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/canmet-energy/parallel-coordinates/issues"
+  },
+  "homepage": "https://github.com/canmet-energy/parallel-coordinates#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2"
+  }
+}
