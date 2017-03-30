@@ -1,0 +1,26 @@
+{
+  "name": "parallel-coordinates",
+  "version": "1.0.0",
+  "description": "Display parallel-coordinates from QAQC data",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "*",
+    "ejs": "^2.5.6",
+    "express": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canmet-energy/parallel-coordinates.git"
+  },
+  "author": "Padmassun Rajakareyar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/canmet-energy/parallel-coordinates/issues"
+  },
+  "homepage": "https://github.com/canmet-energy/parallel-coordinates#readme"
+}
