@@ -24,6 +24,10 @@
 <script src="lib/d3.svg.multibrush.js"></script>
 <script src="lib/sylvester.js"></script>
 <script src="src/setup.js"></script>
+<script>
+	require('./renderer.js')
+
+</script>
 
 <style>
 	body,
@@ -34,28 +38,28 @@
 		width: 100%;
 		font-size: 12px;
 	}
-
+	
 	#pager {
 		position: fixed;
 		width: 100%;
 		bottom: 30%;
 		height: 20px;
 	}
-
+	
 	#bldgType_selector {
 		position: fixed;
 		width: 100%;
 		bottom: 35%;
 		height: 20px;
 	}
-
+	
 	#grid {
 		position: fixed;
 		width: 100%;
 		bottom: 0px;
 		height: 30%;
 	}
-
+	
 	.slick-row:hover {
 		font-weight: bold;
 		color: #069;
@@ -82,4 +86,5 @@
 </body>
 <script>
 	setup()
+
 </script>
