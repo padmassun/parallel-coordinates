@@ -99,6 +99,7 @@ function setup_canvas(data) {
     // slickgrid needs each data element to have an id
     //console.log(data);
     data.forEach(function (d, i) {
+
         d.id = d.id || i;
     });
 
@@ -132,15 +133,32 @@ function setup_canvas(data) {
     //console.log(JSON.stringify(dafault_dimensions))
     //console.log("dafault_dimensions ^")
 
+    function formatter(row, cell, value, columnDef, dataContext) {
+        return value;
+    }
+
     var objDiv = document.getElementById("chart");
     objDiv.scrollTop = objDiv.scrollHeight;
     var column_keys = d3.keys(data[0]);
     var columns = column_keys.map(function (key, i) {
+        if (key == "id") {
+            return {
+                id: "id",
+                name: "id",
+                field: "id",
+                width: 0,
+                minWidth: 0,
+                maxWidth: 0 /*, 
+               cssClass: "reallyHidden", 
+               headerCssClass: "reallyHidden"*/
+            }
+        };
         return {
             id: key,
             name: key,
             field: key,
-            sortable: true
+            sortable: true,
+            formatter: formatter
         }
     });
 
@@ -253,6 +271,9 @@ function get_filtered_data(option) {
                 eval(command);
             }
         }
+        x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>Task</a> "
+        x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>Task</a> "
+        //x["id"] = json[i].run_uuid;
         //console.log(x);
         data.push(x)
     };
