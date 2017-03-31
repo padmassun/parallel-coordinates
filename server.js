@@ -19,7 +19,8 @@ function handleRequest(request, response) {
     var contentTypesByExtension = {
         '.html': "text/html",
         '.css': "text/css",
-        '.js': "text/javascript"
+        '.js': "text/javascript",
+        '.osm': "application/octet-stream"
     };
     fs.exists(filename, function (exists) {
         if (!exists) {
