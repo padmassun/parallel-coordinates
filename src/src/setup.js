@@ -102,7 +102,6 @@ function setup_canvas(data) {
 
         d.id = d.id || i;
     });
-
     var parcoords = d3.parcoords()("#chart")
         //.height(d3.max([document.body.clientHeight - 100, 200]))
         .height(500)
@@ -132,7 +131,6 @@ function setup_canvas(data) {
     //dafault_dimensions = parcoords.dimensions()
     //console.log(JSON.stringify(dafault_dimensions))
     //console.log("dafault_dimensions ^")
-
     function formatter(row, cell, value, columnDef, dataContext) {
         return value;
     }
@@ -148,9 +146,10 @@ function setup_canvas(data) {
                 field: "id",
                 width: 0,
                 minWidth: 0,
-                maxWidth: 0 /*, 
-               cssClass: "reallyHidden", 
-               headerCssClass: "reallyHidden"*/
+                maxWidth: 0
+                /*, 
+                              cssClass: "reallyHidden", 
+                              headerCssClass: "reallyHidden"*/
             }
         };
         return {
@@ -242,6 +241,15 @@ function setup_canvas(data) {
     };
 }
 
+function sigFigs(n, sig) {
+    var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
+    return Math.round(n * mult) / mult;
+}
+
+function isFloat(n) {
+    return Number(n) === n && n % 1 !== 0;
+}
+
 function get_filtered_data(option) {
     //may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
     //based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
@@ -271,10 +279,16 @@ function get_filtered_data(option) {
                 eval(command);
             }
         }
-        x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>Task</a> "
-        x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>Task</a> "
+        x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>OSM File</a> "
+        x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
         //x["id"] = json[i].run_uuid;
         //console.log(x);
+        Object.keys(x).forEach(function (key) {
+            if (isFloat(x[key])) {
+                x[key] = sigFigs(x[key], 4)
+            }
+        });
+
         data.push(x)
     };
     return data

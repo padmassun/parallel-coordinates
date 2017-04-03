@@ -21,24 +21,45 @@
 		"Refrigeration (GJ)": "end_uses.refrigeration_gj",
 		"Generators (GJ)": "end_uses.generators_gj",
 		"Total End Uses (GJ)": "end_uses.total_end_uses_gj",
-		"Total End Uses Water (m3)": "end_uses.total_end_uses_water_m3"
+		"Total End Uses Water (m3)": "end_uses.total_end_uses_water_m3",
+
+		"Heating (GJ/m2)": "end_uses_eui.heating_gj_per_m2",
+		"Cooling (GJ/m2)": "end_uses_eui.cooling_gj_per_m2",
+		"Interior Lighting (GJ/m2)": "end_uses_eui.interior_lighting_gj_per_m2",
+		"Exterior Lighting (GJ/m2)": "end_uses_eui.exterior_lighting_gj_per_m2",
+		"Interior Equipment (GJ/m2)": "end_uses_eui.interior_equipment_gj_per_m2",
+		"Exterior Equipment (GJ/m2)": "end_uses_eui.exterior_equipment_gj_per_m2",
+		"Fans (GJ/m2)": "end_uses_eui.fans_gj_per_m2",
+		"Pumps (GJ/m2)": "end_uses_eui.pumps_gj_per_m2",
+		"Heat Rejection (GJ/m2)": "end_uses_eui.heat_rejection_gj_per_m2",
+		"Heat Rejection Water (m3/m2)": "end_uses_eui.heat_rejection_water_m3_per_m2",
+		"Humidification (GJ/m2)": "end_uses_eui.humidification_gj_per_m2",
+		"Heat Recovery (GJ/m2)": "end_uses_eui.heat_recovery_gj_per_m2",
+		"Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2",
+		"Water Systems Water Usage (m3/m2)": "end_uses_eui.water_systems_water_m3_per_m2",
+		"Refrigeration (GJ/m2)": "end_uses_eui.refrigeration_gj_per_m2",
+		"Generators (GJ/m2)": "end_uses_eui.generators_gj_per_m2",
+		"Total End Uses (GJ/m2)": "end_uses_eui.total_end_uses_gj_per_m2",
+		"Total End Uses Water (m3/m2)": "end_uses_eui.total_end_uses_water_m3_per_m2"
 	},
 	"title": {
 		"Building Type": "building_type",
+		"Province": "geography.state_province_region",
+		"City": "geography.city",
 		"HDD": "geography.hdd",
 		"CDD": "geography.cdd",
 		"Climate Zone": "geography.climate_zone",
-		"End Uses Heating (GJ)": "end_uses.heating_gj",
-		"End Uses Cooling (GJ)": "end_uses.cooling_gj",
-		"Interior Lighting (GJ)": "end_uses.interior_lighting_gj",
-		"Interior Equipment (GJ)": "end_uses.interior_equipment_gj",
-		"Fans (GJ)": "end_uses.fans_gj",
-		"Pump (GJ)": "end_uses.pumps_gj",
-		"Heat Rejection (GJ)": "end_uses.heat_rejection_gj",
-		"Water Systems (GJ)": "end_uses.water_systems_gj",
-		"Water Systems_water (m3)": "end_uses.water_systems_water_m3",
-		"Total End Uses (GJ)": "end_uses.total_end_uses_gj",
-		"Total End Uses Water (m3)": "end_uses.total_end_uses_water_m3"
+		"Heating (GJ/m2)": "end_uses_eui.heating_gj_per_m2",
+		"Cooling (GJ/m2)": "end_uses_eui.cooling_gj_per_m2",
+		"Interior Lighting (GJ/m2)": "end_uses_eui.interior_lighting_gj_per_m2",
+		"Interior Equipment (GJ/m2)": "end_uses_eui.interior_equipment_gj_per_m2",
+		"Fans (GJ/m2)": "end_uses_eui.fans_gj_per_m2",
+		"Pumps (GJ/m2)": "end_uses_eui.pumps_gj_per_m2",
+		"Heat Rejection (GJ/m2)": "end_uses_eui.heat_rejection_gj_per_m2",
+		"Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2",
+		"Water Systems Water Usage (m3/m2)": "end_uses_eui.water_systems_water_m3_per_m2",
+		"Total End Uses (GJ/m2)": "end_uses_eui.total_end_uses_gj_per_m2",
+		"Total End Uses Water (m3/m2)": "end_uses_eui.total_end_uses_water_m3_per_m2"
 	},
 	"buildings": [
 		"FullServiceRestaurant",
@@ -80,40 +101,52 @@
 			"type": "number"
 		},
 		"Climate Zone": {
-			"type": "string"
+			"type": "string",
+			"tickValues": ["4","5","6","7a","7b","8"]
 		},
-		"End Uses Heating (GJ)": {
-			"type": "number"
+		"Heating (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"End Uses Cooling (GJ)": {
-			"type": "number"
+		"Cooling (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Interior Lighting (GJ)": {
-			"type": "number"
+		"Interior Lighting (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Interior Equipment (GJ)": {
-			"type": "number"
+		"Interior Equipment (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Fans (GJ)": {
-			"type": "number"
+		"Fans (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Pump (GJ)": {
-			"type": "number"
+		"Pumps (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Heat Rejection (GJ)": {
-			"type": "number"
+		"Heat Rejection (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Water Systems (GJ)": {
-			"type": "number"
+		"Water Systems (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Water Systems_water (m3)": {
-			"type": "number"
+		"Water Systems Water Usage (m3/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Total End Uses (GJ)": {
-			"type": "number"
+		"Total End Uses (GJ/m2)": {
+			"type": "number",
+			"ticks": 5
 		},
-		"Total End Uses Water (m3)": {
-			"type": "number"
+		"Total End Uses Water (m3/m2)": {
+			"type": "number",
+			"ticks": 5
 		}
 	}
 }
