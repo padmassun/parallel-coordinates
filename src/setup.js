@@ -85,6 +85,32 @@ function setup_canvas(data) {
         eval("dimensions = config_file.views[\"" + view_option + "\"]");
     }
 
+    if (d3.select("#remove_singular").property("checked")) {
+        var remove = []
+        Object.keys(dimensions).forEach(function (keyID) {
+            data_for_keyID = []
+            data.forEach(function (d) {
+                command = "data_for_keyID.push(d[\"" + keyID + "\"])"
+                //console.log(command)
+                eval(command)
+            })
+            max_value = Math.max.apply(null, data_for_keyID)
+            min_value = Math.min.apply(null, data_for_keyID)
+            if (max_value - min_value == 0){
+                remove.push(keyID)
+            }
+            console.log(data_for_keyID)
+        })
+        //return remove
+        console.log(dimensions)
+        console.log(remove)
+        console.log("^ REMOVE d3.select(#remove_singular).property(checked)")
+        remove.forEach(function(key){
+            delete dimensions[key]
+        })
+        console.log(dimensions)
+
+    }
     /*function toObject(arr) {
         var rv = {};
         for (var i = 0; i < arr.length; ++i)
