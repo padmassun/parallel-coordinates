@@ -93,12 +93,6 @@
 		"Mech eng": ["CDD", "Climate Zone"],
 		"Elec eng": ["HDD", "CDD", "Climate Zone"]
 	},
-	"view_types": [
-		"Archetect",
-		"Mech eng",
-		"Elec eng"
-
-	],
 	"dimensions": {
 
 		"Building Type": {

@@ -71,20 +71,24 @@ function setup_canvas(data) {
     //console.log(JSON.parse(JSON.stringify(config_file)).dimensions)
     //console.log("JSON.parse(JSON.stringify(config_file)).dimensions")
 
-    bldgType = d3.select("#bldgType").property("value")
-    if (bldgType == "Select All") {
-        dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
-    } else {
-        console.log(dimensions)
-        dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
-        delete dimensions["Building Type"]
-    }
 
-    if (view_option != "View All") {
-        console.log("dimensions = config_file.views[\"" + view_option + "\"]")
-        eval("dimensions = config_file.views[\"" + view_option + "\"]");
-    }
-
+    dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
+    views = []
+    command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
+    //console.log(command)
+    eval(command)
+    //console.log(views)
+    Object.keys(dimensions).forEach(function (dim) {
+        console.log(dim)
+        if (views.indexOf(dim) == -1) {
+            eval("delete dimensions[\"" + dim + "\"]")
+        }
+        //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
+        //eval("dimensions = config_file.views[\"" + view_option + "\"]");
+    })
+    console.log("new v")
+    console.log(dimensions)
+    /*
     if (d3.select("#remove_singular").property("checked")) {
         var remove = []
         Object.keys(dimensions).forEach(function (keyID) {
@@ -111,6 +115,7 @@ function setup_canvas(data) {
         console.log(dimensions)
 
     }
+*/
     /*function toObject(arr) {
         var rv = {};
         for (var i = 0; i < arr.length; ++i)
@@ -296,7 +301,7 @@ function get_filtered_data(option) {
     for (i = 0; i < json.length; i++) {
         x = {};
         console.log(option)
-        if (option[0] != "Select All" && json[i].building_type != option[0] ) {
+        if (option[0] != "Select All" && json[i].building_type != option[0]) {
             continue;
         }
         if (option[1] != "Select All" && json[i].geography.city != option[1]) {
@@ -337,7 +342,7 @@ function setup_options() {
             return d;
         });
 
-    options = config_file.view_types;
+    options = Object.keys(config_file.views);
     var viewType = d3.select('#viewType')
     viewType.selectAll('option')
         .data(options)
