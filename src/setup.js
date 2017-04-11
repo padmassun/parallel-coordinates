@@ -96,7 +96,7 @@ function setup_canvas(data) {
             })
             max_value = Math.max.apply(null, data_for_keyID)
             min_value = Math.min.apply(null, data_for_keyID)
-            if (max_value - min_value == 0){
+            if (max_value - min_value == 0) {
                 remove.push(keyID)
             }
             console.log(data_for_keyID)
@@ -105,7 +105,7 @@ function setup_canvas(data) {
         console.log(dimensions)
         console.log(remove)
         console.log("^ REMOVE d3.select(#remove_singular).property(checked)")
-        remove.forEach(function(key){
+        remove.forEach(function (key) {
             delete dimensions[key]
         })
         console.log(dimensions)
@@ -295,7 +295,11 @@ function get_filtered_data(option) {
     data = []
     for (i = 0; i < json.length; i++) {
         x = {};
-        if (option != "Select All" && json[i].building_type != option) {
+        console.log(option)
+        if (option[0] != "Select All" && json[i].building_type != option[0] ) {
+            continue;
+        }
+        if (option[1] != "Select All" && json[i].geography.city != option[1]) {
             continue;
         }
         for (var key in title) {
@@ -322,7 +326,7 @@ function get_filtered_data(option) {
 
 function setup_options() {
     options = config_file.buildings;
-    options.unshift("Select All")
+    //options.unshift("Select All")
     //console.log(options + " < options in setup_options")
     var bldgType = d3.select('#bldgType')
     bldgType.selectAll('option')
@@ -343,6 +347,16 @@ function setup_options() {
             return d;
         });
 
+    options = config_file.city;
+    var viewType = d3.select('#cityType')
+    viewType.selectAll('option')
+        .data(options)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        });
+
 }
 
 function update_plot_with_options() {
@@ -350,7 +364,7 @@ function update_plot_with_options() {
     d3.select('#update_bldgType').on('click', function () {
         d3.select("svg > *").remove();
         //console.log(d3.select('#update_bldgType') + "<< select")
-        option = d3.select("#bldgType").property("value")
+        option = [d3.select("#bldgType").property("value"), d3.select("#cityType").property("value")]
         //console.log(option + " < Option");
         var title = {};
         data = get_filtered_data(option)
