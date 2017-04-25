@@ -75,7 +75,8 @@
 		"SmallHotel",
 		"SmallOffice",
 		"RetailStripmall",
-		"Warehouse"
+		"Warehouse",
+		"Select All"
 	],
 	"views": {
 		"End Uses": ["Heating (GJ/m2)",
@@ -223,7 +224,8 @@
 		"Victoria Int'l",
 		"Whitehorse",
 		"Windsor",
-		"Winnipeg Int'l"
+		"Winnipeg Int'l",
+		"Select All"
 	]
 
 }
