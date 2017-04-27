@@ -230,14 +230,14 @@
 
 	"tabs": {
 		"tab1": [
-			"#chart",
-			"#bldgType_selector",
-			"#tooltip",
-			"#grid",
-			"#pager"
+			"chart",
+			"bldgType_selector",
+			"tooltip",
+			"grid",
+			"pager"
 		],
 		"tab2": [
-			"#test"
+			"test"
 		]
 	}
 

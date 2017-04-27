@@ -1,8 +1,51 @@
 function setup() {
     const config_file = JSON.parse(get_file("parallel_plots_config.json"));
+    var current_tab = "tab1"
+    var all_tabs = config_file.tabs
+    switch (current_tab) {
+        case "tab2":
+            show_tab(all_tabs.tab2)
+            break;
+        default:
+            show_tab(all_tabs.tab1)
+            break;
+    }
     setup_options()
+    manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
+
+    function manage_tabs() {
+        var tabs = d3.select('#tabs').selectAll('button')[0]
+        //console.log(tabs)
+        tabs.forEach(function (item, index) {
+            //console.log(d3.select(item))
+            d3.select(item).on('click', function () {
+                console.log(item.id)
+                tab_options = config_file.tabs[item.id]
+                console.log(tab_options)
+                show_tab(tab_options)
+                return null
+            })
+
+        })
+
+    }
+
+    function show_tab(tab_options) {
+        var elems = document.body.getElementsByTagName("div");
+        for (var i = 0, len = elems.length; i < len; i++) {
+            console.log(elems[i].id)
+            if (!tab_options.includes(elems[i].id) && !(elems[i].id == "tabs")) {
+                console.log("inside: " + elems[i].id)
+                console.log(tab_options)
+                elems[i].style.display = 'none'
+            }else{
+                elems[i].style.display = 'block'
+            }
+        }
+    }
+
 
     function toggle_data_hide() {
         var button = document.getElementById('hideData');
@@ -16,7 +59,9 @@ function setup() {
                 grid.style.display = 'block';
                 pager.style.display = 'block';
             }
+            return null
         };
+        button = null
     }
 
     function get_file(name) {
@@ -64,15 +109,15 @@ function setup() {
         eval(command)
         //console.log(views)
         Object.keys(dimensions).forEach(function (dim) {
-            console.log(dim)
+            //console.log(dim)
             if (views.indexOf(dim) == -1) {
                 eval("delete dimensions[\"" + dim + "\"]")
             }
             //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
             //eval("dimensions = config_file.views[\"" + view_option + "\"]");
         })
-        console.log("new v")
-        console.log(dimensions)
+        //console.log("new v")
+        //console.log(dimensions)
         /*
     if (d3.select("#remove_singular").property("checked")) {
         var remove = []
@@ -256,7 +301,6 @@ function setup() {
             dataView.endUpdate();
         };
 
-        parcoords.exit().remove();
     }
 
     function sigFigs(n, sig) {
@@ -321,6 +365,22 @@ function setup() {
         options = config_file.buildings;
         //options.unshift("Select All")
         //console.log(options + " < options in setup_options")
+        var tab_options = Object.keys(config_file.tabs)
+        console.log(tab_options)
+        var tabs = d3.select('#tabs')
+        tabs.selectAll('option')
+            .data(tab_options)
+            .enter()
+            .append("button")
+            .text(function (d) {
+                return d;
+            })
+            .attr("id", function (d) {
+                return d;
+            });
+
+
+
         var bldgType = d3.select('#bldgType')
         bldgType.selectAll('option')
             .data(options)
@@ -353,6 +413,7 @@ function setup() {
     }
 
     function update_plot_with_options() {
+        d3.select('#update_bldgType').on('click', null)
 
         d3.select('#update_bldgType').on('click', function () {
             d3.select(".parcoords svg").remove();
@@ -363,7 +424,7 @@ function setup() {
             data = get_filtered_data(option)
             //console.log(data);
             setup_canvas(data)
-
+            return null
         })
     }
 
