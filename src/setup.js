@@ -1,15 +1,6 @@
 function setup() {
     const config_file = JSON.parse(get_file("parallel_plots_config.json"));
-    var current_tab = "tab1"
-    var all_tabs = config_file.tabs
-    switch (current_tab) {
-        case "tab2":
-            show_tab(all_tabs.tab2)
-            break;
-        default:
-            show_tab(all_tabs.tab1)
-            break;
-    }
+    show_tab(config_file.tabs.tab1)
     setup_options()
     manage_tabs()
     update_plot_with_options()
@@ -40,7 +31,7 @@ function setup() {
                 console.log("inside: " + elems[i].id)
                 console.log(tab_options)
                 elems[i].style.display = 'none'
-            }else{
+            } else {
                 elems[i].style.display = 'block'
             }
         }
@@ -118,43 +109,45 @@ function setup() {
         })
         //console.log("new v")
         //console.log(dimensions)
-        /*
-    if (d3.select("#remove_singular").property("checked")) {
-        var remove = []
-        Object.keys(dimensions).forEach(function (keyID) {
-            data_for_keyID = []
-            data.forEach(function (d) {
-                command = "data_for_keyID.push(d[\"" + keyID + "\"])"
-                //console.log(command)
-                eval(command)
-            })
-            max_value = Math.max.apply(null, data_for_keyID)
-            min_value = Math.min.apply(null, data_for_keyID)
-            if (max_value - min_value == 0) {
-                remove.push(keyID)
+
+        /*  if (d3.select("#remove_singular").property("checked")) {
+                var remove = []
+                Object.keys(dimensions).forEach(function (keyID) {
+                    data_for_keyID = []
+                    data.forEach(function (d) {
+                        command = "data_for_keyID.push(d[\"" + keyID + "\"])"
+                        //console.log(command)
+                        eval(command)
+                    })
+                    max_value = Math.max.apply(null, data_for_keyID)
+                    min_value = Math.min.apply(null, data_for_keyID)
+                    if (max_value - min_value == 0) {
+                        remove.push(keyID)
+                    }
+                    console.log(data_for_keyID)
+                })
+                //return remove
+                console.log(dimensions)
+                console.log(remove)
+                console.log("^ REMOVE d3.select(#remove_singular).property(checked)")
+                remove.forEach(function (key) {
+                    delete dimensions[key]
+                })
+                console.log(dimensions)
             }
-            console.log(data_for_keyID)
-        })
-        //return remove
-        console.log(dimensions)
-        console.log(remove)
-        console.log("^ REMOVE d3.select(#remove_singular).property(checked)")
-        remove.forEach(function (key) {
-            delete dimensions[key]
-        })
-        console.log(dimensions)
+        */
 
-    }
-*/
-        /*function toObject(arr) {
-            var rv = {};
-            for (var i = 0; i < arr.length; ++i)
-                rv[arr[i]] = {};
-            return rv;
-        }
+        /*
+            function toObject(arr) {
+                var rv = {};
+                for (var i = 0; i < arr.length; ++i)
+                    rv[arr[i]] = {};
+                return rv;
+            }
 
-        console.log(toObject(dimensions))
-        console.log("my_dimensions")*/
+            console.log(toObject(dimensions))
+            console.log("my_dimensions")
+        */
 
 
         // slickgrid needs each data element to have an id
@@ -167,7 +160,7 @@ function setup() {
             //.height(d3.max([document.body.clientHeight - 100, 200]))
             .height(500)
             .margin({
-                top: 50,
+                top: 100,
                 left: 150,
                 right: 50,
                 bottom: 16
