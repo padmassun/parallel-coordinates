@@ -1,6 +1,7 @@
 function setup() {
     const config_file = JSON.parse(get_file("parallel_plots_config.json"));
-    show_tab(config_file.tabs.tab1)
+    var tab_list = Object.keys(config_file.tabs)
+    show_tab(config_file.tabs[tab_list[0]])
     setup_options()
     manage_tabs()
     update_plot_with_options()
@@ -24,15 +25,16 @@ function setup() {
     }
 
     function show_tab(tab_options) {
-        var elems = document.body.getElementsByTagName("div");
+        var elems = document.body.children
+        console.log(elems)
         for (var i = 0, len = elems.length; i < len; i++) {
-            console.log(elems[i].id)
-            if (!tab_options.includes(elems[i].id) && !(elems[i].id == "tabs")) {
-                console.log("inside: " + elems[i].id)
-                console.log(tab_options)
-                elems[i].style.display = 'none'
+            console.log(elems[i])
+            if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
+                console.log("VIEW: " + elems[i].id)
+                elems[i].style.visibility = 'visible'
             } else {
-                elems[i].style.display = 'block'
+                console.log("HIDE: " + elems[i].id)
+                elems[i].style.visibility = 'hidden'
             }
         }
     }
@@ -43,12 +45,12 @@ function setup() {
         button.onclick = function () {
             var grid = document.getElementById('grid');
             var pager = document.getElementById('pager');
-            if (grid.style.display !== 'none') {
-                grid.style.display = 'none';
-                pager.style.display = 'none';
+            if (grid.style.visibility !== 'hidden') {
+                grid.style.visibility = 'hidden';
+                pager.style.visibility = 'hidden';
             } else {
-                grid.style.display = 'block';
-                pager.style.display = 'block';
+                grid.style.visibility = 'visible';
+                pager.style.visibility = 'visible';
             }
             return null
         };
