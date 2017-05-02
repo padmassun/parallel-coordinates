@@ -1,1 +1,2 @@
-/src/osm_files/*
+/src/data/osm_files/*
+/src/data/simulations.btap
