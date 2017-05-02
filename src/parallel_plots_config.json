@@ -229,14 +229,14 @@
 	],
 
 	"tabs": {
-		"tab1": [
+		"Parallel Plot": [
 			"chart",
 			"bldgType_selector",
 			"tooltip",
 			"grid",
 			"pager"
 		],
-		"tab2": [
+		"3D  Model": [
 			"test"
 		]
 	}
