@@ -226,6 +226,19 @@
 		"Windsor",
 		"Winnipeg Int'l",
 		"Select All"
-	]
+	],
+
+	"tabs": {
+		"Parallel Plot": [
+			"chart",
+			"bldgType_selector",
+			"tooltip",
+			"grid",
+			"pager"
+		],
+		"3D  Model": [
+			"test"
+		]
+	}
 
 }
