@@ -31,10 +31,12 @@ function setup() {
             console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
                 console.log("VIEW: " + elems[i].id)
-                elems[i].style.visibility = 'visible'
+                //elems[i].style.visibility = 'visible'
+                elems[i].style.display = 'block';
             } else {
                 console.log("HIDE: " + elems[i].id)
-                elems[i].style.visibility = 'hidden'
+                //elems[i].style.visibility = 'hidden'
+                elems[i].style.display = 'none';
             }
         }
     }
@@ -282,6 +284,18 @@ function setup() {
             parcoords.unhighlight();
         });
 
+        grid.onClick.subscribe(function (e, args) {
+            if ($(e.target).hasClass('view-3d-model-button')) {
+                console.log(e.target)
+                // Your code here
+                document.getElementById('model_3d_html').src = "./data/osm_files/" + e.target.id + "_3d.html";
+                console.log(document.getElementById('model_3d_html').src);
+                document.getElementById('model_3d_html').height = 800;
+                document.getElementById('model_3d_html').width = 1000;
+                show_tab("model_3d_html");
+            }
+        });
+
         // fill grid with data
         gridUpdate(data);
 
@@ -341,7 +355,11 @@ function setup() {
                 }
             }
             x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>OSM File</a> "
-            x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
+            console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
+
+            //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
+            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View 3D Model</button>"
+            //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
             //x["id"] = json[i].run_uuid;
             //console.log(x);
             Object.keys(x).forEach(function (key) {
