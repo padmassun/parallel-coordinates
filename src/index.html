@@ -20,6 +20,12 @@
 <link rel="stylesheet" type="text/css" href="lib/d3.parcoords.css">
 <link rel="stylesheet" type="text/css" href="lib/style.css">
 <script src="lib/d3.js"></script>
+
+<script src="lib/d3-ease.v1.js"></script>
+<script src="lib/d3-path.v1.js"></script>
+<script src="lib/d3-shape.v1.js"></script>
+
+<script src="lib/d3pie.js"></script>
 <script src="lib/d3.parcoords.js"></script>
 <script src="lib/d3.svg.multibrush.js"></script>
 <script src="lib/sylvester.js"></script>
@@ -111,7 +117,21 @@
 	<div id="grid"></div>
 	<div id="pager"></div>
 	<div class="tabs" id="tabs"></div>
+	<table style="width:100%" id="end-uses-data-tab">
+		<tr id="end-use-chart">
+			<div id='spaceholder'><br><br></div>
+			<th><div id="pieChart1"></div></th>
+			<th>
+				<div id='spaceholder2'><br><br></div>
+				<div id="pieChart2"></div>
+			</th>
+		</tr>
+		<tr id="end-use-data">
+			<th>test 3</th>
+			<th>test 4</th>
+		</tr>
+		</div>
+		<script>
+			setup()
+		</script>
 </body>
-<script>
-	setup()
-</script>

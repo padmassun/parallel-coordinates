@@ -6,6 +6,7 @@ function setup() {
     manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
+    draw_pie_chart()
 
     function manage_tabs() {
         var tabs = d3.select('#tabs').selectAll('button')[0]
@@ -28,13 +29,13 @@ function setup() {
         var elems = document.body.children
         console.log(elems)
         for (var i = 0, len = elems.length; i < len; i++) {
-            console.log(elems[i])
+            //console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
-                console.log("VIEW: " + elems[i].id)
+                //console.log("VIEW: " + elems[i].id)
                 //elems[i].style.visibility = 'visible'
                 elems[i].style.display = 'block';
             } else {
-                console.log("HIDE: " + elems[i].id)
+                //console.log("HIDE: " + elems[i].id)
                 //elems[i].style.visibility = 'hidden'
                 elems[i].style.display = 'none';
             }
@@ -202,9 +203,10 @@ function setup() {
                     id: "id",
                     name: "id",
                     field: "id",
-                    width: 0,
-                    minWidth: 0,
-                    maxWidth: 0
+                    //width: 50,
+                    minWidth: 350,
+                    toolTip: "id"
+                    //maxWidth: 0
                     /*, 
                                   cssClass: "reallyHidden", 
                                   headerCssClass: "reallyHidden"*/
@@ -214,6 +216,7 @@ function setup() {
                 id: key,
                 name: key,
                 field: key,
+                toolTip: key,
                 sortable: true,
                 formatter: formatter
             }
@@ -222,6 +225,7 @@ function setup() {
         var options = {
             enableCellNavigation: true,
             enableColumnReorder: false,
+            enableTextSelectionOnCells: true,
             multiColumnSort: false
         };
 
@@ -358,9 +362,9 @@ function setup() {
             console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
 
             //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
-            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View 3D Model</button>"
+            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View Model</button>"
             //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
-            //x["id"] = json[i].run_uuid;
+            x["id"] = json[i].run_uuid;
             //console.log(x);
             Object.keys(x).forEach(function (key) {
                 if (isFloat(x[key])) {
@@ -378,6 +382,14 @@ function setup() {
         options = config_file.buildings;
         //options.unshift("Select All")
         //console.log(options + " < options in setup_options")
+        /*console.log(config_file.tabs["End Uses Data"][0])
+        var viewType = d3.select('body')
+        viewType.append('div')
+            .attr('id',config_file.tabs["End Uses Data"][0])
+            .append('tr')
+            .append('th')
+            .append('th')
+        */
         var tab_options = Object.keys(config_file.tabs)
         console.log(tab_options)
         var tabs = d3.select('#tabs')
@@ -423,6 +435,7 @@ function setup() {
                 return d;
             });
 
+
     }
 
     function update_plot_with_options() {
@@ -441,4 +454,44 @@ function setup() {
         })
     }
 
+    function draw_pie_chart() {
+        
+
+        var options = JSON.parse(JSON.stringify(config_file))["pie"]
+        options.data = {}
+        options.data.content = get_pie_data_by_id("26829445-69ed-4553-89c2-8866dc9a6a8c")
+        //console.log("v options")
+        //console.log(options)
+        //console.log("^options")
+        var pie = new d3pie("pieChart1", options);
+        options.data.content = get_pie_data_by_id("606e6246-c6db-4789-a610-0d30b6a52d5a")
+        var pie2 = new d3pie("pieChart2", options);
+    }
+
+    function get_pie_data_by_id(id) {
+        json = JSON.parse(get_file("./data/simulations.json"));
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        var data = []
+        for (i = 0; i < json.length; i++) {
+            if (json[i].run_uuid != id) {
+                continue
+            }
+            console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
+            for (var key in title) {
+                if (title.hasOwnProperty(key)) {
+                    x = {};
+                    x.label = key;
+                    command = "x['value'] = " + "json[i]." + title[key]; 
+                    eval(command);
+                    x['value'] =sigFigs(x['value'], 4)
+                    console.log(typeof x.value);
+                    data.push(x)
+                }
+            }
+
+        };
+        console.log("data vv")
+        console.log(data)
+        return data
+    }
 }
