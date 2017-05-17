@@ -20,12 +20,8 @@
 <link rel="stylesheet" type="text/css" href="lib/d3.parcoords.css">
 <link rel="stylesheet" type="text/css" href="lib/style.css">
 <script src="lib/d3.js"></script>
-
-<script src="lib/d3-ease.v1.js"></script>
 <script src="lib/d3-path.v1.js"></script>
 <script src="lib/d3-shape.v1.js"></script>
-
-<script src="lib/d3pie.js"></script>
 <script src="lib/d3.parcoords.js"></script>
 <script src="lib/d3.svg.multibrush.js"></script>
 <script src="lib/sylvester.js"></script>
@@ -107,10 +103,25 @@
 		top: 95px;
 		z-index: 10;
 	}
+
+	rect {
+		cursor: pointer;
+		stroke-width: 2;
+	}
+
+	rect.disabled {
+		fill: transparent;
+	}
+
+
+	h1 {
+		font-size: 14px;
+		text-align: center;
+	}
 </style>
 
 <body>
-	<iframe src="./data/osm_files/000ca287-f6b6-47d3-945f-65e907544110_3d.html" width="1000" height="800" id="model_3d_html"></iframe>
+	<iframe src="" width="1000" height="800" id="model_3d_html"></iframe>
 
 	<div id="chart" class="parcoords" style="width:1500px; height:500px; overflow:auto;"></div>
 
@@ -125,9 +136,7 @@
 		<button id="hideData">Show/Hide Data table</button>
 		<!--<input type="checkbox" id="remove_singular"> Remove Singular Axis-->
 	</div>
-	<div id="tooltip">
-		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
-	</div>
+	
 	<div id="grid"></div>
 	<div id="pager"></div>
 	<div class="tabs" id="tabs"></div>
@@ -143,11 +152,18 @@
 			</th>
 		</tr>
 		<tr id="end-use-data">
-			<th>test 3</th>
-			<th>test 4</th>
+			<th>
+				<div id="pieChart1-data">test 3</div>
+			</th>
+			<th>
+				<div id="pieChart2-data">test 4</div>
+			</th>
 		</tr>
-		</div>
-		<script>
-			setup()
-		</script>
+	</table>
+	<div id="tooltip">
+		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+	</div>
+	<script>
+		setup()
+	</script>
 </body>
