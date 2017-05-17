@@ -6,7 +6,8 @@ function setup() {
     manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
-    draw_pie_chart()
+    draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
+    draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
 
     function manage_tabs() {
         var tabs = d3.select('#tabs').selectAll('button')[0]
@@ -454,18 +455,110 @@ function setup() {
         })
     }
 
-    function draw_pie_chart() {
-        
+    function draw_pie_chart(domID, id) {
+        var dataset = get_pie_data_by_id(id)
 
-        var options = JSON.parse(JSON.stringify(config_file))["pie"]
-        options.data = {}
-        options.data.content = get_pie_data_by_id("26829445-69ed-4553-89c2-8866dc9a6a8c")
-        //console.log("v options")
-        //console.log(options)
-        //console.log("^options")
-        var pie = new d3pie("pieChart1", options);
-        options.data.content = get_pie_data_by_id("606e6246-c6db-4789-a610-0d30b6a52d5a")
-        var pie2 = new d3pie("pieChart2", options);
+        var width = 360;
+        var height = 360;
+        var radius = Math.min(width, height) / 2;
+        var donutWidth = 75;
+        var legendRectSize = 18;
+        var legendSpacing = 4;
+
+        var color = d3.scale.ordinal(d3.scale.category20());
+
+        var tooltip = d3.select(domID)
+            .append('div')
+            .attr('class', 'tooltip');
+
+        tooltip.append('div')
+            .attr('class', 'label');
+
+        tooltip.append('div')
+            .attr('class', 'count');
+
+        tooltip.append('div')
+            .attr('class', 'percent');
+
+        var color = d3.scale.ordinal().domain(Object.keys(config_file["pie-data"]))
+            .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
+                "#990099", "#0099c6", "#dd4477", "#66aa00",
+                "#b82e2e", "#316395", "#994499", "#22aa99",
+                "#aaaa11", "#6633cc", "#e67300", "#8b0707",
+                "#651067", "#329262", "#5574a6", "#3b3eac"
+            ]);
+        var svg = d3.select(domID)
+            .append('svg')
+            .attr('width', width + 300)
+            .attr('height', height + 30)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2 + 15) +
+                ',' + (height / 2 + 15) + ')');
+
+        var arc = d3.arc()
+            .innerRadius(radius - donutWidth)
+            .outerRadius(radius);
+
+        var pie = d3.pie()
+            .value(function (d) {
+                return d.value;
+            })
+            .sort(null);
+
+        var path = svg.selectAll('path')
+            .data(pie(dataset))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d, i) {
+                return color(d.data.label);
+            });
+
+        path.on('mouseover', function (d) {
+            var total = d3.sum(dataset.map(function (d) {
+                return d.value;
+            }));
+            var percent = Math.round(1000 * d.data.value / total) / 10;
+            tooltip.select('.label').html(d.data.label);
+            tooltip.select('.count').html(d.data.value + ' GJ/m2');
+            tooltip.select('.percent').html(percent + '%');
+            tooltip.style('display', 'block');
+        });
+
+        path.on('mouseout', function () {
+            tooltip.style('display', 'none');
+        });
+
+        path.on('mousemove', function (d) {
+            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+                .style('left', (d3.event.layerX + 10) + 'px');
+        });
+
+        var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function (d, i) {
+                var height = legendRectSize + legendSpacing;
+                var offset = height * color.domain().length / 2;
+                var horz = radius + 50;
+                var vert = i * height - offset;
+                return 'translate(' + horz + ',' + vert + ')';
+            });
+
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color);
+
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function (d) {
+                return d;
+            });
     }
 
     function get_pie_data_by_id(id) {
@@ -481,9 +574,9 @@ function setup() {
                 if (title.hasOwnProperty(key)) {
                     x = {};
                     x.label = key;
-                    command = "x['value'] = " + "json[i]." + title[key]; 
+                    command = "x['value'] = " + "json[i]." + title[key];
                     eval(command);
-                    x['value'] =sigFigs(x['value'], 4)
+                    x['value'] = sigFigs(x['value'], 4)
                     console.log(typeof x.value);
                     data.push(x)
                 }
