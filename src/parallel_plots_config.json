@@ -155,6 +155,7 @@
 		}
 	},
 	"city": [
+		"Select All",
 		"Abbotsford",
 		"Bagotville",
 		"Baie Comeau",
@@ -224,8 +225,7 @@
 		"Victoria Int'l",
 		"Whitehorse",
 		"Windsor",
-		"Winnipeg Int'l",
-		"Select All"
+		"Winnipeg Int'l"
 	],
 
 	"tabs": {
@@ -242,7 +242,9 @@
 		"End Uses Data": [
 			"end-uses-data-tab",
 			"spaceholder2",
-			"spaceholder"
+			"spaceholder",
+			"pieChart1-data",
+			"pieChart2-data"
 		]
 	},
 

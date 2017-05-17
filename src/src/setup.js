@@ -6,8 +6,8 @@ function setup() {
     manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
-    draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
-    draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
+    //draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
+    //draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
 
     function manage_tabs() {
         var tabs = d3.select('#tabs').selectAll('button')[0]
@@ -15,9 +15,9 @@ function setup() {
         tabs.forEach(function (item, index) {
             //console.log(d3.select(item))
             d3.select(item).on('click', function () {
-                console.log(item.id)
+                //console.log(item.id)
                 tab_options = config_file.tabs[item.id]
-                console.log(tab_options)
+                //console.log(tab_options)
                 show_tab(tab_options)
                 return null
             })
@@ -28,7 +28,7 @@ function setup() {
 
     function show_tab(tab_options) {
         var elems = document.body.children
-        console.log(elems)
+        //console.log(elems)
         for (var i = 0, len = elems.length; i < len; i++) {
             //console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
@@ -309,6 +309,17 @@ function setup() {
             gridUpdate(d);
         });
 
+        parcoords.on("brushend", function (d) {
+            d3.select("#pieChart1").html("")
+            d3.select("#pieChart2").html("")
+            if (d[0] != null) {
+                draw_pie_chart("#pieChart1", d[0])
+            }
+            if (d[1] != null) {
+                draw_pie_chart("#pieChart1", d[1])
+            }
+        })
+
         function gridUpdate(data) {
             dataView.beginUpdate();
             dataView.setItems(data);
@@ -360,7 +371,7 @@ function setup() {
                 }
             }
             x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>OSM File</a> "
-            console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
+            //console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
 
             //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
             x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View Model</button>"
@@ -392,7 +403,7 @@ function setup() {
             .append('th')
         */
         var tab_options = Object.keys(config_file.tabs)
-        console.log(tab_options)
+        //console.log(tab_options)
         var tabs = d3.select('#tabs')
         tabs.selectAll('option')
             .data(tab_options)
@@ -455,11 +466,19 @@ function setup() {
         })
     }
 
-    function draw_pie_chart(domID, id) {
-        var dataset = get_pie_data_by_id(id)
+    function draw_pie_chart(domID, datapoint = null, id = null) {
+        var dataset = []
 
-        var width = 360;
-        var height = 360;
+        if (datapoint != null) {
+            console.log("extract_data_for_pie(datapoint)")
+            dataset = extract_data_for_pie(datapoint)
+        } else {
+            console.log("get_pie_data_by_id(id)")
+            dataset = get_pie_data_by_id(id)
+        }
+
+        var width = 300;
+        var height = 300;
         var radius = Math.min(width, height) / 2;
         var donutWidth = 75;
         var legendRectSize = 18;
@@ -489,11 +508,18 @@ function setup() {
             ]);
         var svg = d3.select(domID)
             .append('svg')
-            .attr('width', width + 300)
-            .attr('height', height + 30)
+            .attr('width', width + 200)
+            .attr('height', height + 100)
             .append('g')
             .attr('transform', 'translate(' + (width / 2 + 15) +
-                ',' + (height / 2 + 15) + ')');
+                ',' + (height / 2 + 100) + ')');
+
+        svg.append("text")
+            .attr("x", ((width - 200) / 2))
+            .attr("y", (-height / 2 - 15))
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text(datapoint["Building Type"] + " for \n" + datapoint["City"]);
 
         var arc = d3.arc()
             .innerRadius(radius - donutWidth)
@@ -542,8 +568,8 @@ function setup() {
             .attr('transform', function (d, i) {
                 var height = legendRectSize + legendSpacing;
                 var offset = height * color.domain().length / 2;
-                var horz = radius + 50;
-                var vert = i * height - offset;
+                var horz = radius + 10;
+                var vert = -i * height + offset;
                 return 'translate(' + horz + ',' + vert + ')';
             });
 
@@ -583,6 +609,31 @@ function setup() {
             }
 
         };
+        console.log("data vv")
+        console.log(data)
+        return data
+    }
+
+    function extract_data_for_pie(datapoint) {
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        console.log(title);
+        console.log(datapoint);
+        console.log(datapoint.length);
+        var data = []
+        for (var key in title) {
+            console.log(title[key])
+            if (title.hasOwnProperty(key)) {
+                x = {};
+                x.label = key;
+                x['value'] = datapoint[key]
+                x['value'] = sigFigs(x['value'], 4)
+                x.enabled = true
+                console.log(datapoint[key]);
+                console.log(x);
+                data.push(x)
+            }
+        };
+
         console.log("data vv")
         console.log(data)
         return data
