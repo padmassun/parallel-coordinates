@@ -8,7 +8,6 @@ function setup() {
     toggle_data_hide()
     //draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
     //draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
-
     function manage_tabs() {
         var tabs = d3.select('#tabs').selectAll('button')[0]
         //console.log(tabs)
@@ -314,9 +313,23 @@ function setup() {
             d3.select("#pieChart2").html("")
             if (d[0] != null) {
                 draw_pie_chart("#pieChart1", d[0])
+                pieChartData = document.getElementById('pieChart1-data');
+                pieChartData.src = "./test.html";
+                pieChartData.style = "width:100%;"
+                $('iframe').load(function () {
+                    this.style.height =
+                        this.contentWindow.document.body.offsetHeight + 'px';
+                });
             }
             if (d[1] != null) {
-                draw_pie_chart("#pieChart1", d[1])
+                draw_pie_chart("#pieChart2", d[1])
+                pieChartData = document.getElementById('pieChart2-data');
+                pieChartData.src = "./test.html";
+                pieChartData.style = "width:100%;"
+                $('iframe').load(function () {
+                    this.style.height =
+                        this.contentWindow.document.body.offsetHeight + 'px';
+                });
             }
         })
 
@@ -616,26 +629,26 @@ function setup() {
 
     function extract_data_for_pie(datapoint) {
         title = JSON.parse(JSON.stringify(config_file))["pie-data"];
-        console.log(title);
-        console.log(datapoint);
-        console.log(datapoint.length);
+        //console.log(title);
+        //console.log(datapoint);
+        //console.log(datapoint.length);
         var data = []
         for (var key in title) {
-            console.log(title[key])
+            //console.log(title[key])
             if (title.hasOwnProperty(key)) {
                 x = {};
                 x.label = key;
                 x['value'] = datapoint[key]
                 x['value'] = sigFigs(x['value'], 4)
                 x.enabled = true
-                console.log(datapoint[key]);
-                console.log(x);
+                //console.log(datapoint[key]);
+                //console.log(x);
                 data.push(x)
             }
         };
 
-        console.log("data vv")
-        console.log(data)
+        //console.log("data vv")
+        //console.log(data)
         return data
     }
 }

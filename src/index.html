@@ -136,30 +136,30 @@
 		<button id="hideData">Show/Hide Data table</button>
 		<!--<input type="checkbox" id="remove_singular"> Remove Singular Axis-->
 	</div>
-	
+
 	<div id="grid"></div>
 	<div id="pager"></div>
 	<div class="tabs" id="tabs"></div>
 	<table style="width:100%" id="end-uses-data-tab">
-		<tr id="end-use-chart">
+		<tr id="end-use-chart" style="width:100%" >
 			<div id='spaceholder'><br><br></div>
 			<th>
-				<div id="pieChart1"></div>
+				<div id="pieChart1" style="float:left; width:50%"></div>
 			</th>
 			<th>
 				<div id='spaceholder2'><br><br></div>
-				<div id="pieChart2"></div>
-			</th>
-		</tr>
-		<tr id="end-use-data">
-			<th>
-				<div id="pieChart1-data">test 3</div>
-			</th>
-			<th>
-				<div id="pieChart2-data">test 4</div>
+				<div id="pieChart2" style="float:right; width:50%"></div>
 			</th>
 		</tr>
 	</table>
+	<div id="piedata" >
+		<div id="piedata-left" style="float: left; width: 49%;">
+			<iframe id="pieChart1-data"></iframe>
+		</div>
+		<div id="piedata-right" style="float: right; width: 49%;">
+			<iframe id="pieChart2-data"></iframe>
+		</div>
+	</div>
 	<div id="tooltip">
 		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
 	</div>
