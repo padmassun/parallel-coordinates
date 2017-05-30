@@ -1,6 +1,7 @@
 function setup() {
     const config_file = JSON.parse(get_file("parallel_plots_config.json"));
     var tab_list = Object.keys(config_file.tabs)
+    var pie1_active = true
     show_tab(config_file.tabs[tab_list[0]])
     setup_options()
     manage_tabs()
@@ -33,7 +34,11 @@ function setup() {
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
                 //console.log("VIEW: " + elems[i].id)
                 //elems[i].style.visibility = 'visible'
-                elems[i].style.display = 'block';
+                if (elems[i].id == 'end-uses-data-tab') {
+                    elems[i].style.display = 'table';
+                } else {
+                    elems[i].style.display = 'block';
+                }
             } else {
                 //console.log("HIDE: " + elems[i].id)
                 //elems[i].style.visibility = 'hidden'
@@ -289,6 +294,9 @@ function setup() {
         });
 
         grid.onClick.subscribe(function (e, args) {
+            dataItem = args.grid.getDataItem(args.row)
+            console.log(dataItem)
+            //checks clicking on view model button
             if ($(e.target).hasClass('view-3d-model-button')) {
                 console.log(e.target)
                 // Your code here
@@ -297,6 +305,34 @@ function setup() {
                 document.getElementById('model_3d_html').height = 800;
                 document.getElementById('model_3d_html').width = 1000;
                 show_tab("model_3d_html");
+            } else { //if it is clicked elsewhere, then it will draw that data's piechart.
+                if (pie1_active) {
+                    pie1_active = false
+                    d3.select("#pieChart1").html("")
+                    if (dataItem != null) {
+                        draw_pie_chart("#pieChart1", dataItem)
+                        pieChartData = document.getElementById('pieChart1-data');
+                        pieChartData.src = "./test.html";
+                        pieChartData.style = "width:100%;"
+                        $('iframe').load(function () {
+                            this.style.height =
+                                this.contentWindow.document.body.offsetHeight + 'px';
+                        });
+                    }
+                } else {
+                    pie1_active = true
+                    d3.select("#pieChart2").html("")
+                    if (dataItem != null) {
+                        draw_pie_chart("#pieChart2", dataItem)
+                        pieChartData = document.getElementById('pieChart2-data');
+                        pieChartData.src = "./test.html";
+                        pieChartData.style = "width:100%;"
+                        $('iframe').load(function () {
+                            this.style.height =
+                                this.contentWindow.document.body.offsetHeight + 'px';
+                        });
+                    }
+                }
             }
         });
 
@@ -309,7 +345,7 @@ function setup() {
         });
 
         parcoords.on("brushend", function (d) {
-            d3.select("#pieChart1").html("")
+            /*d3.select("#pieChart1").html("")
             d3.select("#pieChart2").html("")
             if (d[0] != null) {
                 draw_pie_chart("#pieChart1", d[0])
@@ -330,7 +366,7 @@ function setup() {
                     this.style.height =
                         this.contentWindow.document.body.offsetHeight + 'px';
                 });
-            }
+            }*/
         })
 
         function gridUpdate(data) {
@@ -490,7 +526,7 @@ function setup() {
             dataset = get_pie_data_by_id(id)
         }
 
-        var width = 300;
+        var width = Math.max(300, $(window).width() / 2);
         var height = 300;
         var radius = Math.min(width, height) / 2;
         var donutWidth = 75;
@@ -521,14 +557,15 @@ function setup() {
             ]);
         var svg = d3.select(domID)
             .append('svg')
-            .attr('width', width + 200)
-            .attr('height', height + 100)
+            .attr('width', /*"100%"*/ width)
+            .attr('height', /*"100%"*/ height + 100)
+            //.attr("viewBox", "0 0 " + width + " " + height)
             .append('g')
-            .attr('transform', 'translate(' + (width / 2 + 15) +
+            .attr('transform', 'translate(' + (width / 2 - radius) +
                 ',' + (height / 2 + 100) + ')');
 
         svg.append("text")
-            .attr("x", ((width - 200) / 2))
+            .attr("x", (0 + radius / 2))
             .attr("y", (-height / 2 - 15))
             .attr("text-anchor", "middle")
             .style("font-size", "20px")
@@ -581,7 +618,7 @@ function setup() {
             .attr('transform', function (d, i) {
                 var height = legendRectSize + legendSpacing;
                 var offset = height * color.domain().length / 2;
-                var horz = radius + 10;
+                var horz = radius + 20;
                 var vert = -i * height + offset;
                 return 'translate(' + horz + ',' + vert + ')';
             });
