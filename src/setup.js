@@ -1,21 +1,23 @@
 function setup() {
     const config_file = JSON.parse(get_file("parallel_plots_config.json"));
     var tab_list = Object.keys(config_file.tabs)
+    var pie1_active = true
     show_tab(config_file.tabs[tab_list[0]])
     setup_options()
     manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
-
+    //draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
+    //draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
     function manage_tabs() {
         var tabs = d3.select('#tabs').selectAll('button')[0]
         //console.log(tabs)
         tabs.forEach(function (item, index) {
             //console.log(d3.select(item))
             d3.select(item).on('click', function () {
-                console.log(item.id)
+                //console.log(item.id)
                 tab_options = config_file.tabs[item.id]
-                console.log(tab_options)
+                //console.log(tab_options)
                 show_tab(tab_options)
                 return null
             })
@@ -26,15 +28,19 @@ function setup() {
 
     function show_tab(tab_options) {
         var elems = document.body.children
-        console.log(elems)
+        //console.log(elems)
         for (var i = 0, len = elems.length; i < len; i++) {
-            console.log(elems[i])
+            //console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
-                console.log("VIEW: " + elems[i].id)
+                //console.log("VIEW: " + elems[i].id)
                 //elems[i].style.visibility = 'visible'
-                elems[i].style.display = 'block';
+                if (elems[i].id == 'end-uses-data-tab') {
+                    elems[i].style.display = 'table';
+                } else {
+                    elems[i].style.display = 'block';
+                }
             } else {
-                console.log("HIDE: " + elems[i].id)
+                //console.log("HIDE: " + elems[i].id)
                 //elems[i].style.visibility = 'hidden'
                 elems[i].style.display = 'none';
             }
@@ -202,9 +208,10 @@ function setup() {
                     id: "id",
                     name: "id",
                     field: "id",
-                    width: 0,
-                    minWidth: 0,
-                    maxWidth: 0
+                    //width: 50,
+                    minWidth: 350,
+                    toolTip: "id"
+                    //maxWidth: 0
                     /*, 
                                   cssClass: "reallyHidden", 
                                   headerCssClass: "reallyHidden"*/
@@ -214,6 +221,7 @@ function setup() {
                 id: key,
                 name: key,
                 field: key,
+                toolTip: key,
                 sortable: true,
                 formatter: formatter
             }
@@ -222,6 +230,7 @@ function setup() {
         var options = {
             enableCellNavigation: true,
             enableColumnReorder: false,
+            enableTextSelectionOnCells: true,
             multiColumnSort: false
         };
 
@@ -285,6 +294,9 @@ function setup() {
         });
 
         grid.onClick.subscribe(function (e, args) {
+            dataItem = args.grid.getDataItem(args.row)
+            console.log(dataItem)
+            //checks clicking on view model button
             if ($(e.target).hasClass('view-3d-model-button')) {
                 console.log(e.target)
                 // Your code here
@@ -293,6 +305,34 @@ function setup() {
                 document.getElementById('model_3d_html').height = 800;
                 document.getElementById('model_3d_html').width = 1000;
                 show_tab("model_3d_html");
+            } else { //if it is clicked elsewhere, then it will draw that data's piechart.
+                if (pie1_active) {
+                    pie1_active = false
+                    d3.select("#pieChart1").html("")
+                    if (dataItem != null) {
+                        draw_pie_chart("#pieChart1", dataItem)
+                        pieChartData = document.getElementById('pieChart1-data');
+                        pieChartData.src = "./test.html";
+                        pieChartData.style = "width:100%;"
+                        $('iframe').load(function () {
+                            this.style.height =
+                                this.contentWindow.document.body.offsetHeight + 'px';
+                        });
+                    }
+                } else {
+                    pie1_active = true
+                    d3.select("#pieChart2").html("")
+                    if (dataItem != null) {
+                        draw_pie_chart("#pieChart2", dataItem)
+                        pieChartData = document.getElementById('pieChart2-data');
+                        pieChartData.src = "./test.html";
+                        pieChartData.style = "width:100%;"
+                        $('iframe').load(function () {
+                            this.style.height =
+                                this.contentWindow.document.body.offsetHeight + 'px';
+                        });
+                    }
+                }
             }
         });
 
@@ -303,6 +343,31 @@ function setup() {
         parcoords.on("brush", function (d) {
             gridUpdate(d);
         });
+
+        parcoords.on("brushend", function (d) {
+            /*d3.select("#pieChart1").html("")
+            d3.select("#pieChart2").html("")
+            if (d[0] != null) {
+                draw_pie_chart("#pieChart1", d[0])
+                pieChartData = document.getElementById('pieChart1-data');
+                pieChartData.src = "./test.html";
+                pieChartData.style = "width:100%;"
+                $('iframe').load(function () {
+                    this.style.height =
+                        this.contentWindow.document.body.offsetHeight + 'px';
+                });
+            }
+            if (d[1] != null) {
+                draw_pie_chart("#pieChart2", d[1])
+                pieChartData = document.getElementById('pieChart2-data');
+                pieChartData.src = "./test.html";
+                pieChartData.style = "width:100%;"
+                $('iframe').load(function () {
+                    this.style.height =
+                        this.contentWindow.document.body.offsetHeight + 'px';
+                });
+            }*/
+        })
 
         function gridUpdate(data) {
             dataView.beginUpdate();
@@ -355,12 +420,12 @@ function setup() {
                 }
             }
             x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>OSM File</a> "
-            console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
+            //console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
 
             //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
-            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View 3D Model</button>"
+            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View Model</button>"
             //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
-            //x["id"] = json[i].run_uuid;
+            x["id"] = json[i].run_uuid;
             //console.log(x);
             Object.keys(x).forEach(function (key) {
                 if (isFloat(x[key])) {
@@ -378,8 +443,16 @@ function setup() {
         options = config_file.buildings;
         //options.unshift("Select All")
         //console.log(options + " < options in setup_options")
+        /*console.log(config_file.tabs["End Uses Data"][0])
+        var viewType = d3.select('body')
+        viewType.append('div')
+            .attr('id',config_file.tabs["End Uses Data"][0])
+            .append('tr')
+            .append('th')
+            .append('th')
+        */
         var tab_options = Object.keys(config_file.tabs)
-        console.log(tab_options)
+        //console.log(tab_options)
         var tabs = d3.select('#tabs')
         tabs.selectAll('option')
             .data(tab_options)
@@ -423,6 +496,7 @@ function setup() {
                 return d;
             });
 
+
     }
 
     function update_plot_with_options() {
@@ -441,4 +515,177 @@ function setup() {
         })
     }
 
+    function draw_pie_chart(domID, datapoint = null, id = null) {
+        var dataset = []
+
+        if (datapoint != null) {
+            console.log("extract_data_for_pie(datapoint)")
+            dataset = extract_data_for_pie(datapoint)
+        } else {
+            console.log("get_pie_data_by_id(id)")
+            dataset = get_pie_data_by_id(id)
+        }
+
+        var width = Math.max(300, $(window).width() / 2);
+        var height = 300;
+        var radius = Math.min(width, height) / 2;
+        var donutWidth = 75;
+        var legendRectSize = 18;
+        var legendSpacing = 4;
+
+        var color = d3.scale.ordinal(d3.scale.category20());
+
+        var tooltip = d3.select(domID)
+            .append('div')
+            .attr('class', 'tooltip');
+
+        tooltip.append('div')
+            .attr('class', 'label');
+
+        tooltip.append('div')
+            .attr('class', 'count');
+
+        tooltip.append('div')
+            .attr('class', 'percent');
+
+        var color = d3.scale.ordinal().domain(Object.keys(config_file["pie-data"]))
+            .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
+                "#990099", "#0099c6", "#dd4477", "#66aa00",
+                "#b82e2e", "#316395", "#994499", "#22aa99",
+                "#aaaa11", "#6633cc", "#e67300", "#8b0707",
+                "#651067", "#329262", "#5574a6", "#3b3eac"
+            ]);
+        var svg = d3.select(domID)
+            .append('svg')
+            .attr('width', /*"100%"*/ width)
+            .attr('height', /*"100%"*/ height + 100)
+            //.attr("viewBox", "0 0 " + width + " " + height)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2 - radius) +
+                ',' + (height / 2 + 100) + ')');
+
+        svg.append("text")
+            .attr("x", (0 + radius / 2))
+            .attr("y", (-height / 2 - 15))
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text(datapoint["Building Type"] + " for \n" + datapoint["City"]);
+
+        var arc = d3.arc()
+            .innerRadius(radius - donutWidth)
+            .outerRadius(radius);
+
+        var pie = d3.pie()
+            .value(function (d) {
+                return d.value;
+            })
+            .sort(null);
+
+        var path = svg.selectAll('path')
+            .data(pie(dataset))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d, i) {
+                return color(d.data.label);
+            });
+
+        path.on('mouseover', function (d) {
+            var total = d3.sum(dataset.map(function (d) {
+                return d.value;
+            }));
+            var percent = Math.round(1000 * d.data.value / total) / 10;
+            tooltip.select('.label').html(d.data.label);
+            tooltip.select('.count').html(d.data.value + ' GJ/m2');
+            tooltip.select('.percent').html(percent + '%');
+            tooltip.style('display', 'block');
+        });
+
+        path.on('mouseout', function () {
+            tooltip.style('display', 'none');
+        });
+
+        path.on('mousemove', function (d) {
+            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+                .style('left', (d3.event.layerX + 10) + 'px');
+        });
+
+        var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function (d, i) {
+                var height = legendRectSize + legendSpacing;
+                var offset = height * color.domain().length / 2;
+                var horz = radius + 20;
+                var vert = -i * height + offset;
+                return 'translate(' + horz + ',' + vert + ')';
+            });
+
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color);
+
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function (d) {
+                return d;
+            });
+    }
+
+    function get_pie_data_by_id(id) {
+        json = JSON.parse(get_file("./data/simulations.json"));
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        var data = []
+        for (i = 0; i < json.length; i++) {
+            if (json[i].run_uuid != id) {
+                continue
+            }
+            console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
+            for (var key in title) {
+                if (title.hasOwnProperty(key)) {
+                    x = {};
+                    x.label = key;
+                    command = "x['value'] = " + "json[i]." + title[key];
+                    eval(command);
+                    x['value'] = sigFigs(x['value'], 4)
+                    console.log(typeof x.value);
+                    data.push(x)
+                }
+            }
+
+        };
+        console.log("data vv")
+        console.log(data)
+        return data
+    }
+
+    function extract_data_for_pie(datapoint) {
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        //console.log(title);
+        //console.log(datapoint);
+        //console.log(datapoint.length);
+        var data = []
+        for (var key in title) {
+            //console.log(title[key])
+            if (title.hasOwnProperty(key)) {
+                x = {};
+                x.label = key;
+                x['value'] = datapoint[key]
+                x['value'] = sigFigs(x['value'], 4)
+                x.enabled = true
+                //console.log(datapoint[key]);
+                //console.log(x);
+                data.push(x)
+            }
+        };
+
+        //console.log("data vv")
+        //console.log(data)
+        return data
+    }
 }

@@ -155,6 +155,7 @@
 		}
 	},
 	"city": [
+		"Select All",
 		"Abbotsford",
 		"Bagotville",
 		"Baie Comeau",
@@ -224,8 +225,7 @@
 		"Victoria Int'l",
 		"Whitehorse",
 		"Windsor",
-		"Winnipeg Int'l",
-		"Select All"
+		"Winnipeg Int'l"
 	],
 
 	"tabs": {
@@ -238,7 +238,31 @@
 		],
 		"3D  Model": [
 			"model_3d_html"
+		],
+		"End Uses Data": [
+			"end-uses-data-tab",
+			"spaceholder2",
+			"spaceholder",
+			"pieChart1-data",
+			"pieChart2-data",
+			"piedata"
 		]
+	},
+
+	"End Uses Data": [
+		"Choice 1",
+		"Choice 2"
+	],
+
+	"pie-data": {
+		"Heating (GJ/m2)": "end_uses_eui.heating_gj_per_m2",
+		"Cooling (GJ/m2)": "end_uses_eui.cooling_gj_per_m2",
+		"Interior Lighting (GJ/m2)": "end_uses_eui.interior_lighting_gj_per_m2",
+		"Interior Equipment (GJ/m2)": "end_uses_eui.interior_equipment_gj_per_m2",
+		"Fans (GJ/m2)": "end_uses_eui.fans_gj_per_m2",
+		"Pumps (GJ/m2)": "end_uses_eui.pumps_gj_per_m2",
+		"Heat Rejection (GJ/m2)": "end_uses_eui.heat_rejection_gj_per_m2",
+		"Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2"
 	}
 
 }
