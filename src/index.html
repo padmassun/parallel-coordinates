@@ -20,6 +20,8 @@
 <link rel="stylesheet" type="text/css" href="lib/d3.parcoords.css">
 <link rel="stylesheet" type="text/css" href="lib/style.css">
 <script src="lib/d3.js"></script>
+<script src="lib/d3-path.v1.js"></script>
+<script src="lib/d3-shape.v1.js"></script>
 <script src="lib/d3.parcoords.js"></script>
 <script src="lib/d3.svg.multibrush.js"></script>
 <script src="lib/sylvester.js"></script>
@@ -87,10 +89,44 @@
 	div.tabs button.active {
 		background-color: #ccc;
 	}
+
+	.tooltip {
+		background: #eee;
+		box-shadow: 0 0 5px #999999;
+		color: #333;
+		display: none;
+		font-size: 12px;
+		left: 130px;
+		padding: 5px;
+		position: absolute;
+		text-align: center;
+		top: 95px;
+		z-index: 10;
+	}
+
+	rect {
+		cursor: pointer;
+		stroke-width: 2;
+	}
+
+	rect.disabled {
+		fill: transparent;
+	}
+
+
+	h1 {
+		font-size: 14px;
+		text-align: center;
+	}
+
+	tbody,
+	table {
+		table-layout: fixed
+	}
 </style>
 
 <body>
-	<iframe src="./data/osm_files/000ca287-f6b6-47d3-945f-65e907544110_3d.html" width="1000" height="800" id="model_3d_html"></iframe>
+	<iframe src="" width="1000" height="800" id="model_3d_html"></iframe>
 
 	<div id="chart" class="parcoords" style="width:1500px; height:500px; overflow:auto;"></div>
 
@@ -105,13 +141,36 @@
 		<button id="hideData">Show/Hide Data table</button>
 		<!--<input type="checkbox" id="remove_singular"> Remove Singular Axis-->
 	</div>
-	<div id="tooltip">
-		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
-	</div>
+
 	<div id="grid"></div>
 	<div id="pager"></div>
 	<div class="tabs" id="tabs"></div>
+	<table id="end-uses-data-tab">
+		<tbody>
+			<tr id="end-use-chart">		
+				<th>
+					<div id='spaceholder'><br><br></div>
+					<div id="pieChart1" style="float:left;"></div>
+				</th>
+				<th>
+					<div id='spaceholder2'><br><br></div>
+					<div id="pieChart2" style="float:right;"></div>
+				</th>
+			</tr>
+		</tbody>
+	</table>
+	<div id="piedata">
+		<div id="piedata-left" style="float: left; width: 49%;">
+			<iframe id="pieChart1-data"></iframe>
+		</div>
+		<div id="piedata-right" style="float: right; width: 49%;">
+			<iframe id="pieChart2-data"></iframe>
+		</div>
+	</div>
+	<div id="tooltip">
+		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+	</div>
+	<script>
+		setup()
+	</script>
 </body>
-<script>
-	setup()
-</script>
