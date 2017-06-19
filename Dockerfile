@@ -12,17 +12,13 @@ RUN apk update && \
 	gem install --no-rdoc --no-ri $RUBY_GEMS  && \
 	rm -rf /var/cache/apk/*
 
-# Install app dependencies
-COPY /src/package.json /src/package.json
-RUN cd /src; npm install
+RUN mkdir -p /dataviz/src
 
-# Bundle app source
-COPY ./src .
+WORKDIR /dataviz
 
-RUN cd /data \
-&& cat qaqc.tar* > ./qaqc.tar \
-&& tar -xf qaqc.tar \
-&& ruby btap_osm_and_html_extracter -f qaqc.csv
+ADD ./src/package.json /dataviz/src/
+
+RUN cd ./src && pwd && ls && npm install
 
 EXPOSE  8080
 CMD ["node", "server.js"]

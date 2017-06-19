@@ -14,17 +14,25 @@ Navigate to the root of the directory and run `cd src && npm install` to install
 # Running the Server
 Navigate to `src` folder and run the following code in the terminal to start the server
 
-```node server.js```
+```bash
+node server.js
+```
 
 Next go to `http://localhost:8080/` to access the Parallel coordinate plot
 
 # Running the Server with Docker
 
-Navigate to current directory, and run ```docker build -t nodeserver .```
+Navigate to current directory, and run
+
+```bash
+docker build -t nodeserver .
+```
 
 execute the following command to run the dockerized server
 
-```docker run -p 8080:8080 nodeserver```
+```
+docker run -p 8080:8080 -v .:/dataviz nodeserver
+```
 
 Next use your browser and go to `http://localhost:8080/` to access the Parallel coordinate plot
 
