@@ -74,16 +74,16 @@ function setup() {
 
     function setup_canvas(data) {
         var color_by_bldg_type = d3.scale.ordinal()
-            .domain(config_file.buildings)
-            .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
-                "#990099", "#0099c6", "#dd4477", "#66aa00",
-                "#b82e2e", "#316395", "#994499", "#22aa99",
-                "#aaaa11", "#6633cc", "#e67300", "#8b0707",
-                "#651067", "#329262", "#5574a6", "#3b3eac"
+        .domain(config_file.buildings)
+        .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
+            "#990099", "#0099c6", "#dd4477", "#66aa00",
+            "#b82e2e", "#316395", "#994499", "#22aa99",
+            "#aaaa11", "#6633cc", "#e67300", "#8b0707",
+            "#651067", "#329262", "#5574a6", "#3b3eac"
             ]);
         var red_to_cyan = d3.scale.linear()
-            .domain([3000, 8000])
-            .range(["cyan", "red"]);
+        .domain([3000, 8000])
+        .range(["cyan", "red"]);
 
         var color = function (d) {
             //console.log(d);
@@ -145,7 +145,7 @@ function setup() {
                 })
                 console.log(dimensions)
             }
-        */
+            */
 
         /*
             function toObject(arr) {
@@ -157,7 +157,7 @@ function setup() {
 
             console.log(toObject(dimensions))
             console.log("my_dimensions")
-        */
+            */
 
 
         // slickgrid needs each data element to have an id
@@ -215,17 +215,17 @@ function setup() {
                     /*, 
                                   cssClass: "reallyHidden", 
                                   headerCssClass: "reallyHidden"*/
-                }
-            };
-            return {
-                id: key,
-                name: key,
-                field: key,
-                toolTip: key,
-                sortable: true,
-                formatter: formatter
-            }
-        });
+                              }
+                          };
+                          return {
+                            id: key,
+                            name: key,
+                            field: key,
+                            toolTip: key,
+                            sortable: true,
+                            formatter: formatter
+                        }
+                    });
 
         var options = {
             enableCellNavigation: true,
@@ -255,7 +255,7 @@ function setup() {
 
         function comparer(a, b) {
             var x = a[sortcol],
-                y = b[sortcol];
+            y = b[sortcol];
             return (x == y ? 0 : (x > y ? 1 : -1));
         }
 
@@ -295,28 +295,31 @@ function setup() {
 
         grid.onClick.subscribe(function (e, args) {
             dataItem = args.grid.getDataItem(args.row)
-            console.log(dataItem)
+            //console.log(dataItem)
             //checks clicking on view model button
             if ($(e.target).hasClass('view-3d-model-button')) {
                 console.log(e.target)
                 // Your code here
-                document.getElementById('model_3d_html').src = "./data/osm_files/" + e.target.id + "_3d.html";
-                console.log(document.getElementById('model_3d_html').src);
+                document.getElementById('model_3d_html').src = e.target.getAttribute('data-url');
+                //console.log(e.target.getAttribute('data-url'));
+                //console.log(document.getElementById('model_3d_html').src);
                 document.getElementById('model_3d_html').height = 800;
                 document.getElementById('model_3d_html').width = 1000;
                 show_tab("model_3d_html");
-            } else { //if it is clicked elsewhere, then it will draw that data's piechart.
+            } 
+            //if it is clicked elsewhere, then it will draw that data's piechart.
+            if ($(e.target).hasClass('compare-button')){
                 if (pie1_active) {
                     pie1_active = false
                     d3.select("#pieChart1").html("")
                     if (dataItem != null) {
                         draw_pie_chart("#pieChart1", dataItem)
                         pieChartData = document.getElementById('pieChart1-data');
-                        pieChartData.src = "./test.html";
+                        pieChartData.src = e.target.getAttribute('data-url');
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
                             this.style.height =
-                                this.contentWindow.document.body.offsetHeight + 'px';
+                            this.contentWindow.document.body.offsetHeight + 'px';
                         });
                     }
                 } else {
@@ -325,11 +328,11 @@ function setup() {
                     if (dataItem != null) {
                         draw_pie_chart("#pieChart2", dataItem)
                         pieChartData = document.getElementById('pieChart2-data');
-                        pieChartData.src = "./test.html";
+                        pieChartData.src = e.target.getAttribute('data-url');
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
                             this.style.height =
-                                this.contentWindow.document.body.offsetHeight + 'px';
+                            this.contentWindow.document.body.offsetHeight + 'px';
                         });
                     }
                 }
@@ -386,7 +389,7 @@ function setup() {
         return Number(n) === n && n % 1 !== 0;
     }
 
-    function get_filtered_data(option) {
+    function get_filtered_data(option, baseline = true) {
         //may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
         //based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
         //parallel_plots_config.json 
@@ -395,7 +398,7 @@ function setup() {
         console.log("config_file.title");
         console.log(config_file.title);
         */
-        json = JSON.parse(get_file("./data/simulations.json"));
+        json = get_simulations_json(baseline)
         title = JSON.parse(JSON.stringify(config_file)).title;
         /*console.log(config_file.title)
         if (!("Building Type" in title)){
@@ -404,7 +407,37 @@ function setup() {
         }*/
         data = []
         for (i = 0; i < json.length; i++) {
+              //get osm path from config file
+              root_path = ""
+              if(baseline){
+                  root_path = config_file['file_location']['baselines']['root']
+              }else{
+                  root_path = config_file['file_location']['ecms']['root']
+              }
+              osm_file_path = root_path + config_file['file_location']['osm_files']
+              model_3d_file = root_path + config_file['file_location']['3d_model']
+              os_report_file = root_path + config_file['file_location']['os_report']
+
+              for (var j=0; j < json[i]['measures'].length; j++) {
+                if (json[i]['measures'][j]["name"] != "create_prototype_building"){
+                    continue
+                }
+                epw_file = json[i]['measures'][j]["arguments"]["epw_file"].replace(".epw","")
+
+                osm_file_path = osm_file_path.replace("$(building_type)",json[i].building_type)
+                osm_file_path = osm_file_path.replace("$(epw_file)",epw_file)
+                osm_file_path = osm_file_path.replace("$(id)",json[i].run_uuid)
+
+                model_3d_file = model_3d_file.replace("$(building_type)",json[i].building_type)
+                model_3d_file = model_3d_file.replace("$(epw_file)",epw_file)
+                model_3d_file = model_3d_file.replace("$(id)",json[i].run_uuid)
+
+                os_report_file = os_report_file.replace("$(building_type)",json[i].building_type)
+                os_report_file = os_report_file.replace("$(epw_file)",epw_file)
+                os_report_file = os_report_file.replace("$(id)",json[i].run_uuid)
+            }
             x = {};
+            x["compare"] = "<button class='compare-button' data-url='"+os_report_file+"' id='" + json[i].run_uuid + "'>Compare</button>"
             //console.log(option)
             if (option[0] != "Select All" && json[i].building_type != option[0]) {
                 continue;
@@ -419,11 +452,11 @@ function setup() {
                     eval(command);
                 }
             }
-            x["osm"] = "<a href='./data/osm_files/" + json[i].run_uuid + ".osm'>OSM File</a> "
+            x["osm"] = "<a href='"+osm_file_path+"'>OSM File</a> "
             //console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
 
             //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
-            x["model"] = "<button class='view-3d-model-button' id='" + json[i].run_uuid + "'>View Model</button>"
+            x["model"] = "<button class='view-3d-model-button' data-url='"+model_3d_file+"' id='" + json[i].run_uuid + "'>View Model</button>"
             //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
             x["id"] = json[i].run_uuid;
             //console.log(x);
@@ -450,51 +483,51 @@ function setup() {
             .append('tr')
             .append('th')
             .append('th')
-        */
-        var tab_options = Object.keys(config_file.tabs)
+            */
+            var tab_options = Object.keys(config_file.tabs)
         //console.log(tab_options)
         var tabs = d3.select('#tabs')
         tabs.selectAll('option')
-            .data(tab_options)
-            .enter()
-            .append("button")
-            .text(function (d) {
-                return d;
-            })
-            .attr("id", function (d) {
-                return d;
-            });
+        .data(tab_options)
+        .enter()
+        .append("button")
+        .text(function (d) {
+            return d;
+        })
+        .attr("id", function (d) {
+            return d;
+        });
 
 
 
         var bldgType = d3.select('#bldgType')
         bldgType.selectAll('option')
-            .data(options)
-            .enter()
-            .append('option')
-            .text(function (d) {
-                return d;
-            });
+        .data(options)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        });
 
         options = Object.keys(config_file.views);
         var viewType = d3.select('#viewType')
         viewType.selectAll('option')
-            .data(options)
-            .enter()
-            .append('option')
-            .text(function (d) {
-                return d;
-            });
+        .data(options)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        });
 
         options = config_file.city;
         var viewType = d3.select('#cityType')
         viewType.selectAll('option')
-            .data(options)
-            .enter()
-            .append('option')
-            .text(function (d) {
-                return d;
-            });
+        .data(options)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        });
 
 
     }
@@ -536,52 +569,52 @@ function setup() {
         var color = d3.scale.ordinal(d3.scale.category20());
 
         var tooltip = d3.select(domID)
-            .append('div')
-            .attr('class', 'tooltip');
+        .append('div')
+        .attr('class', 'tooltip');
 
         tooltip.append('div')
-            .attr('class', 'label');
+        .attr('class', 'label');
 
         tooltip.append('div')
-            .attr('class', 'count');
+        .attr('class', 'count');
 
         tooltip.append('div')
-            .attr('class', 'percent');
+        .attr('class', 'percent');
 
         var color = d3.scale.ordinal().domain(Object.keys(config_file["pie-data"]))
-            .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
-                "#990099", "#0099c6", "#dd4477", "#66aa00",
-                "#b82e2e", "#316395", "#994499", "#22aa99",
-                "#aaaa11", "#6633cc", "#e67300", "#8b0707",
-                "#651067", "#329262", "#5574a6", "#3b3eac"
+        .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
+            "#990099", "#0099c6", "#dd4477", "#66aa00",
+            "#b82e2e", "#316395", "#994499", "#22aa99",
+            "#aaaa11", "#6633cc", "#e67300", "#8b0707",
+            "#651067", "#329262", "#5574a6", "#3b3eac"
             ]);
         var svg = d3.select(domID)
-            .append('svg')
-            .attr('width', /*"100%"*/ width)
-            .attr('height', /*"100%"*/ height + 100)
+        .append('svg')
+        .attr('width', /*"100%"*/ width)
+        .attr('height', /*"100%"*/ height + 100)
             //.attr("viewBox", "0 0 " + width + " " + height)
             .append('g')
             .attr('transform', 'translate(' + (width / 2 - radius) +
                 ',' + (height / 2 + 100) + ')');
 
-        svg.append("text")
+            svg.append("text")
             .attr("x", (0 + radius / 2))
             .attr("y", (-height / 2 - 15))
             .attr("text-anchor", "middle")
             .style("font-size", "20px")
             .text(datapoint["Building Type"] + " for \n" + datapoint["City"]);
 
-        var arc = d3.arc()
+            var arc = d3.arc()
             .innerRadius(radius - donutWidth)
             .outerRadius(radius);
 
-        var pie = d3.pie()
+            var pie = d3.pie()
             .value(function (d) {
                 return d.value;
             })
             .sort(null);
 
-        var path = svg.selectAll('path')
+            var path = svg.selectAll('path')
             .data(pie(dataset))
             .enter()
             .append('path')
@@ -590,27 +623,27 @@ function setup() {
                 return color(d.data.label);
             });
 
-        path.on('mouseover', function (d) {
-            var total = d3.sum(dataset.map(function (d) {
-                return d.value;
-            }));
-            var percent = Math.round(1000 * d.data.value / total) / 10;
-            tooltip.select('.label').html(d.data.label);
-            tooltip.select('.count').html(d.data.value + ' GJ/m2');
-            tooltip.select('.percent').html(percent + '%');
-            tooltip.style('display', 'block');
-        });
+            path.on('mouseover', function (d) {
+                var total = d3.sum(dataset.map(function (d) {
+                    return d.value;
+                }));
+                var percent = Math.round(1000 * d.data.value / total) / 10;
+                tooltip.select('.label').html(d.data.label);
+                tooltip.select('.count').html(d.data.value + ' GJ/m2');
+                tooltip.select('.percent').html(percent + '%');
+                tooltip.style('display', 'block');
+            });
 
-        path.on('mouseout', function () {
-            tooltip.style('display', 'none');
-        });
+            path.on('mouseout', function () {
+                tooltip.style('display', 'none');
+            });
 
-        path.on('mousemove', function (d) {
-            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+            path.on('mousemove', function (d) {
+                tooltip.style('top', (d3.event.layerY + 10) + 'px')
                 .style('left', (d3.event.layerX + 10) + 'px');
-        });
+            });
 
-        var legend = svg.selectAll('.legend')
+            var legend = svg.selectAll('.legend')
             .data(color.domain())
             .enter()
             .append('g')
@@ -623,49 +656,49 @@ function setup() {
                 return 'translate(' + horz + ',' + vert + ')';
             });
 
-        legend.append('rect')
+            legend.append('rect')
             .attr('width', legendRectSize)
             .attr('height', legendRectSize)
             .style('fill', color)
             .style('stroke', color);
 
-        legend.append('text')
+            legend.append('text')
             .attr('x', legendRectSize + legendSpacing)
             .attr('y', legendRectSize - legendSpacing)
             .text(function (d) {
                 return d;
             });
-    }
+        }
 
-    function get_pie_data_by_id(id) {
-        json = JSON.parse(get_file("./data/simulations.json"));
-        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
-        var data = []
-        for (i = 0; i < json.length; i++) {
-            if (json[i].run_uuid != id) {
-                continue
-            }
-            console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
-            for (var key in title) {
-                if (title.hasOwnProperty(key)) {
-                    x = {};
-                    x.label = key;
-                    command = "x['value'] = " + "json[i]." + title[key];
-                    eval(command);
-                    x['value'] = sigFigs(x['value'], 4)
-                    console.log(typeof x.value);
-                    data.push(x)
+        function get_pie_data_by_id(id, baseline = true) {
+            json = get_simulations_json(baseline);
+            title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+            var data = []
+            for (i = 0; i < json.length; i++) {
+                if (json[i].run_uuid != id) {
+                    continue
                 }
-            }
+                console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
+                for (var key in title) {
+                    if (title.hasOwnProperty(key)) {
+                        x = {};
+                        x.label = key;
+                        command = "x['value'] = " + "json[i]." + title[key];
+                        eval(command);
+                        x['value'] = sigFigs(x['value'], 4)
+                        console.log(typeof x.value);
+                        data.push(x)
+                    }
+                }
 
-        };
-        console.log("data vv")
-        console.log(data)
-        return data
-    }
+            };
+            console.log("data vv")
+            console.log(data)
+            return data
+        }
 
-    function extract_data_for_pie(datapoint) {
-        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        function extract_data_for_pie(datapoint) {
+            title = JSON.parse(JSON.stringify(config_file))["pie-data"];
         //console.log(title);
         //console.log(datapoint);
         //console.log(datapoint.length);
@@ -688,4 +721,15 @@ function setup() {
         //console.log(data)
         return data
     }
+
+    function get_simulations_json(baseline){
+        json_file_path = ""
+        if (baseline){
+            json_file_path = config_file["file_location"]["baselines"]["simulations"]
+        }else{
+            json_file_path = config_file["file_location"]["ecms"]["simulations"]
+        }
+        return JSON.parse(get_file(json_file_path));
+    }
+
 }

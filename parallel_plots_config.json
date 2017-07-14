@@ -59,7 +59,8 @@
 		"Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2",
 		"Water Systems Water Usage (m3/m2)": "end_uses_eui.water_systems_water_m3_per_m2",
 		"Total End Uses (GJ/m2)": "end_uses_eui.total_end_uses_gj_per_m2",
-		"Total End Uses Water (m3/m2)": "end_uses_eui.total_end_uses_water_m3_per_m2"
+		"Total End Uses Water (m3/m2)": "end_uses_eui.total_end_uses_water_m3_per_m2",
+		"Baseline" : "is_baseline"
 	},
 	"buildings": [
 		"FullServiceRestaurant",
@@ -152,6 +153,9 @@
 		"Total End Uses Water (m3/m2)": {
 			"type": "number",
 			"ticks": 5
+		},
+		"Baseline": {
+			"type": "string"
 		}
 	},
 	"city": [
@@ -263,6 +267,24 @@
 		"Pumps (GJ/m2)": "end_uses_eui.pumps_gj_per_m2",
 		"Heat Rejection (GJ/m2)": "end_uses_eui.heat_rejection_gj_per_m2",
 		"Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2"
+	},
+
+	"file_location":{
+		"baselines": {
+				"root": "./data/baselines",
+				"simulations": "./data/baselines/simulations.json"
+		},
+		"ecms" : {
+				"root": "./data/ecms",
+				"simulations": "./data/ecms/simulations.json"
+		},
+		"3d_model" : "/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html",
+		"eplus_table" : "/output/$(building_type)/$(epw_file)/eplus_table/$(id)-eplustbl.htm",
+		"os_report" : "/output/$(building_type)/$(epw_file)/os_report/$(id)-os-report.html",
+		"osm_files" : "/output/$(building_type)/$(epw_file)/osm_files/$(id).osm",
+		"qaqc_files" :"/output/$(building_type)/$(epw_file)/qaqc_files/$(id).json"
 	}
+
+
 
 }
