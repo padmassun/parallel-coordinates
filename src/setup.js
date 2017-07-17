@@ -74,7 +74,7 @@ function setup() {
 
     function setup_canvas(data) {
         var color_by_bldg_type = d3.scale.ordinal()
-        .domain(config_file.buildings)
+        .domain(get_all_building_type(get_baseline_status()))
         .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
             "#990099", "#0099c6", "#dd4477", "#66aa00",
             "#b82e2e", "#316395", "#994499", "#22aa99",
@@ -108,9 +108,15 @@ function setup() {
         command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
         //console.log(command)
         eval(command)
-        //console.log(views)
+        console.log(views)
+        out = ["Building Type"]
+        if (d3.select("#bldgType").property("value") == "Select All" && views.indexOf("Building Type") == -1){
+            views.unshift("Building Type")
+        }
+        console.log(views)
         Object.keys(dimensions).forEach(function (dim) {
             //console.log(dim)
+
             if (views.indexOf(dim) == -1) {
                 eval("delete dimensions[\"" + dim + "\"]")
             }
@@ -166,13 +172,15 @@ function setup() {
 
             d.id = d.id || i;
         });
+        console.log(d3.select("#chart").property("scrollHeight"))
+
         var parcoords = d3.parcoords()("#chart")
             //.height(d3.max([document.body.clientHeight - 100, 200]))
-            .height(500)
+            .height(d3.select("#chart").property("scrollHeight"))
             .margin({
                 top: 100,
                 left: 150,
-                right: 50,
+                right: 100,
                 bottom: 16
             })
             .interactive()
@@ -389,7 +397,7 @@ function setup() {
         return Number(n) === n && n % 1 !== 0;
     }
 
-    function get_filtered_data(option, baseline = true) {
+    function get_filtered_data(option) {
         //may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
         //based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
         //parallel_plots_config.json 
@@ -398,7 +406,13 @@ function setup() {
         console.log("config_file.title");
         console.log(config_file.title);
         */
-        json = get_simulations_json(baseline)
+        baseline = get_baseline_status()
+        building_type = option[0]
+        city = option[1]
+        //console.log(building_type)
+        //console.log(city)
+        json = get_data_by_building_and_city(baseline,building_type,city)
+        //console.log(json)
         title = JSON.parse(JSON.stringify(config_file)).title;
         /*console.log(config_file.title)
         if (!("Building Type" in title)){
@@ -407,18 +421,17 @@ function setup() {
         }*/
         data = []
         for (i = 0; i < json.length; i++) {
-              //get osm path from config file
-              root_path = ""
-              if(baseline){
-                  root_path = config_file['file_location']['baselines']['root']
-              }else{
-                  root_path = config_file['file_location']['ecms']['root']
-              }
-              osm_file_path = root_path + config_file['file_location']['osm_files']
-              model_3d_file = root_path + config_file['file_location']['3d_model']
-              os_report_file = root_path + config_file['file_location']['os_report']
-
-              for (var j=0; j < json[i]['measures'].length; j++) {
+            //get osm path from config file
+            root_path = ""
+            if(baseline){
+                root_path = config_file['file_location']['baselines']['root']
+            }else{
+                root_path = config_file['file_location']['ecms']['root']
+            }
+            osm_file_path = root_path + config_file['file_location']['osm_files']
+            model_3d_file = root_path + config_file['file_location']['3d_model']
+            os_report_file = root_path + config_file['file_location']['os_report']
+            for (var j=0; j < json[i]['measures'].length; j++) {
                 if (json[i]['measures'][j]["name"] != "create_prototype_building"){
                     continue
                 }
@@ -438,6 +451,7 @@ function setup() {
             }
             x = {};
             x["compare"] = "<button class='compare-button' data-url='"+os_report_file+"' id='" + json[i].run_uuid + "'>Compare</button>"
+            x["model"] = "<button class='view-3d-model-button' data-url='"+model_3d_file+"' id='" + json[i].run_uuid + "'>View Model</button>"
             //console.log(option)
             if (option[0] != "Select All" && json[i].building_type != option[0]) {
                 continue;
@@ -456,7 +470,6 @@ function setup() {
             //console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
 
             //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
-            x["model"] = "<button class='view-3d-model-button' data-url='"+model_3d_file+"' id='" + json[i].run_uuid + "'>View Model</button>"
             //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
             x["id"] = json[i].run_uuid;
             //console.log(x);
@@ -473,7 +486,6 @@ function setup() {
     }
 
     function setup_options() {
-        options = config_file.buildings;
         //options.unshift("Select All")
         //console.log(options + " < options in setup_options")
         /*console.log(config_file.tabs["End Uses Data"][0])
@@ -498,8 +510,7 @@ function setup() {
             return d;
         });
 
-
-
+        options = get_all_building_type(get_baseline_status());
         var bldgType = d3.select('#bldgType')
         bldgType.selectAll('option')
         .data(options)
@@ -519,7 +530,7 @@ function setup() {
             return d;
         });
 
-        options = config_file.city;
+        options = get_all_cities(get_baseline_status());
         var viewType = d3.select('#cityType')
         viewType.selectAll('option')
         .data(options)
@@ -528,8 +539,6 @@ function setup() {
         .text(function (d) {
             return d;
         });
-
-
     }
 
     function update_plot_with_options() {
@@ -545,6 +554,35 @@ function setup() {
             //console.log(data);
             setup_canvas(data)
             return null
+        })
+
+        d3.select('#show_ecm').on('click', function () {
+            console.log("show_ecm");
+
+            options = get_all_building_type(get_baseline_status());
+            document.getElementById('bldgType').innerHTML = "";
+            console.log(document.getElementById('bldgType'))
+            var bldgType = d3.select('#bldgType')
+            bldgType.selectAll('option')
+            .data(options)
+            .enter()
+            .append('option')
+            .text(function (d) {
+                return d;
+            });
+
+            options = get_all_cities(get_baseline_status());
+            document.getElementById('cityType').innerHTML = "";
+            console.log(document.getElementById('cityType'))
+            var viewType = d3.select('#cityType')
+            viewType.selectAll('option')
+            .data(options)
+            .enter()
+            .append('option')
+            .text(function (d) {
+                return d;
+            });
+            
         })
     }
 
@@ -592,113 +630,113 @@ function setup() {
         .append('svg')
         .attr('width', /*"100%"*/ width)
         .attr('height', /*"100%"*/ height + 100)
-            //.attr("viewBox", "0 0 " + width + " " + height)
-            .append('g')
-            .attr('transform', 'translate(' + (width / 2 - radius) +
-                ',' + (height / 2 + 100) + ')');
+        //.attr("viewBox", "0 0 " + width + " " + height)
+        .append('g')
+        .attr('transform', 'translate(' + (width / 2 - radius) +
+            ',' + (height / 2 + 100) + ')');
 
-            svg.append("text")
-            .attr("x", (0 + radius / 2))
-            .attr("y", (-height / 2 - 15))
-            .attr("text-anchor", "middle")
-            .style("font-size", "20px")
-            .text(datapoint["Building Type"] + " for \n" + datapoint["City"]);
+        svg.append("text")
+        .attr("x", (0 + radius / 2))
+        .attr("y", (-height / 2 - 15))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .text(datapoint["Building Type"] + " for \n" + datapoint["City"]);
 
-            var arc = d3.arc()
-            .innerRadius(radius - donutWidth)
-            .outerRadius(radius);
+        var arc = d3.arc()
+        .innerRadius(radius - donutWidth)
+        .outerRadius(radius);
 
-            var pie = d3.pie()
-            .value(function (d) {
+        var pie = d3.pie()
+        .value(function (d) {
+            return d.value;
+        })
+        .sort(null);
+
+        var path = svg.selectAll('path')
+        .data(pie(dataset))
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', function (d, i) {
+            return color(d.data.label);
+        });
+
+        path.on('mouseover', function (d) {
+            var total = d3.sum(dataset.map(function (d) {
                 return d.value;
-            })
-            .sort(null);
+            }));
+            var percent = Math.round(1000 * d.data.value / total) / 10;
+            tooltip.select('.label').html(d.data.label);
+            tooltip.select('.count').html(d.data.value + ' GJ/m2');
+            tooltip.select('.percent').html(percent + '%');
+            tooltip.style('display', 'block');
+        });
 
-            var path = svg.selectAll('path')
-            .data(pie(dataset))
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', function (d, i) {
-                return color(d.data.label);
-            });
+        path.on('mouseout', function () {
+            tooltip.style('display', 'none');
+        });
 
-            path.on('mouseover', function (d) {
-                var total = d3.sum(dataset.map(function (d) {
-                    return d.value;
-                }));
-                var percent = Math.round(1000 * d.data.value / total) / 10;
-                tooltip.select('.label').html(d.data.label);
-                tooltip.select('.count').html(d.data.value + ' GJ/m2');
-                tooltip.select('.percent').html(percent + '%');
-                tooltip.style('display', 'block');
-            });
+        path.on('mousemove', function (d) {
+            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+            .style('left', (d3.event.layerX + 10) + 'px');
+        });
 
-            path.on('mouseout', function () {
-                tooltip.style('display', 'none');
-            });
+        var legend = svg.selectAll('.legend')
+        .data(color.domain())
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', function (d, i) {
+            var height = legendRectSize + legendSpacing;
+            var offset = height * color.domain().length / 2;
+            var horz = radius + 20;
+            var vert = -i * height + offset;
+            return 'translate(' + horz + ',' + vert + ')';
+        });
 
-            path.on('mousemove', function (d) {
-                tooltip.style('top', (d3.event.layerY + 10) + 'px')
-                .style('left', (d3.event.layerX + 10) + 'px');
-            });
+        legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', color)
+        .style('stroke', color);
 
-            var legend = svg.selectAll('.legend')
-            .data(color.domain())
-            .enter()
-            .append('g')
-            .attr('class', 'legend')
-            .attr('transform', function (d, i) {
-                var height = legendRectSize + legendSpacing;
-                var offset = height * color.domain().length / 2;
-                var horz = radius + 20;
-                var vert = -i * height + offset;
-                return 'translate(' + horz + ',' + vert + ')';
-            });
+        legend.append('text')
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function (d) {
+            return d;
+        });
+    }
 
-            legend.append('rect')
-            .attr('width', legendRectSize)
-            .attr('height', legendRectSize)
-            .style('fill', color)
-            .style('stroke', color);
-
-            legend.append('text')
-            .attr('x', legendRectSize + legendSpacing)
-            .attr('y', legendRectSize - legendSpacing)
-            .text(function (d) {
-                return d;
-            });
-        }
-
-        function get_pie_data_by_id(id, baseline = true) {
-            json = get_simulations_json(baseline);
-            title = JSON.parse(JSON.stringify(config_file))["pie-data"];
-            var data = []
-            for (i = 0; i < json.length; i++) {
-                if (json[i].run_uuid != id) {
-                    continue
+    function get_pie_data_by_id(id, baseline = true) {
+        json = get_simulations_json(baseline);
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+        var data = []
+        for (i = 0; i < json.length; i++) {
+            if (json[i].run_uuid != id) {
+                continue
+            }
+            console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
+            for (var key in title) {
+                if (title.hasOwnProperty(key)) {
+                    x = {};
+                    x.label = key;
+                    command = "x['value'] = " + "json[i]." + title[key];
+                    eval(command);
+                    x['value'] = sigFigs(x['value'], 4)
+                    console.log(typeof x.value);
+                    data.push(x)
                 }
-                console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
-                for (var key in title) {
-                    if (title.hasOwnProperty(key)) {
-                        x = {};
-                        x.label = key;
-                        command = "x['value'] = " + "json[i]." + title[key];
-                        eval(command);
-                        x['value'] = sigFigs(x['value'], 4)
-                        console.log(typeof x.value);
-                        data.push(x)
-                    }
-                }
+            }
 
-            };
-            console.log("data vv")
-            console.log(data)
-            return data
-        }
+        };
+        console.log("data vv")
+        console.log(data)
+        return data
+    }
 
-        function extract_data_for_pie(datapoint) {
-            title = JSON.parse(JSON.stringify(config_file))["pie-data"];
+    function extract_data_for_pie(datapoint) {
+        title = JSON.parse(JSON.stringify(config_file))["pie-data"];
         //console.log(title);
         //console.log(datapoint);
         //console.log(datapoint.length);
@@ -722,14 +760,154 @@ function setup() {
         return data
     }
 
-    function get_simulations_json(baseline){
+    function get_simulations_json(baseline, id = null, building_type = null, city = null){
         json_file_path = ""
+        json_file = {}
+        index_file = {}
+        baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
+        baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
         if (baseline){
-            json_file_path = config_file["file_location"]["baselines"]["simulations"]
+            json_file_path = baseline_json_file_path
+            index_file = baseline_index_file
         }else{
             json_file_path = config_file["file_location"]["ecms"]["simulations"]
+            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
         }
         return JSON.parse(get_file(json_file_path));
+    }
+
+    function get_data_by_id(id,baseline){
+        json_file_path = ""
+        json_file = {}
+        index_file = {}
+        index = ""
+        if(!baseline) {
+            json_file_path = config_file["file_location"]["ecms"]["simulations"]
+            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+        } else {
+            json_file_path = config_file["file_location"]["baselines"]["simulations"]
+            index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+        }
+        if (id.constructor === Array){
+            full_json = get_simulations_json(baseline)
+            out_json = []
+            for (var i = 0; i < id.length; i++) {
+                index = index_file["id"][id[i]]
+                out_json.push(full_json[index])
+            }
+            full_json = null //release memory
+            return out_json
+        }else{
+            index = index_file["id"][id]
+            return JSON.parse(get_file(json_file_path))[index]
+        }
+    }
+
+    function get_data_by_building_and_city(baseline,building_type,city){
+        json_file = {}
+        index_file = {}
+
+        baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+        baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
+        
+        if(!baseline) {
+            json_file_path = config_file["file_location"]["ecms"]["simulations"]
+            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+        } else {
+            json_file_path = config_file["file_location"]["baselines"]["simulations"]
+            index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+        }
+        ids = []
+        if (building_type == "Select All"){
+            console.log("building_type == Select All")
+            if (city == "Select All"){
+                console.log("city == Select All")
+                return get_simulations_json(baseline)
+            }else{
+                all_building_types = get_all_building_type(baseline)
+                for (var i = 0; i < all_building_types.length; i++) {
+                    if (all_building_types[i] == "Select All"){
+                        continue;
+                    }
+                    //console.log(all_building_types[i])
+                    //console.log(index_file['datapoint'][all_building_types[i]][city])
+                    //ids.push(index_file['datapoint'][all_building_types[i]][city])
+                    ids = ids.concat(index_file['datapoint'][all_building_types[i]][city])
+                }
+                console.log("city != Select All")
+                //console.log(ids)
+            }
+
+        }else{
+            console.log("building_type != Select All")
+            if (city == "Select All"){
+                all_cities = get_all_cities(baseline)
+                for (var i = 0; i < all_cities.length; i++) {
+                    if (all_cities[i] == "Select All"){
+                        continue;
+                    }
+                    //console.log("building_type "+ building_type + "  city: " + all_cities[i])
+                    //console.log(index_file['datapoint'][building_type][all_cities[i]])
+                    ids = ids.concat(index_file['datapoint'][building_type][all_cities[i]])
+                }
+                console.log("city == Select All")
+                //console.log(ids)
+            }else{  
+                ids = index_file['datapoint'][building_type][city]
+                if (ids == null) {
+                    console.log("datapoint for building_type: "+ building_type +"and City: "+ city + "was not found")
+                }
+                else{
+                    console.log("city != Select All")
+                    //console.log(ids)
+                }
+            }
+        }
+        return get_data_by_id(ids,baseline)
+    }
+
+    function get_all_cities(baseline){
+        if(!baseline) {
+            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+        } else {
+            index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+            index_file["cities"].sort().unshift(["Select All"])
+        }
+        return index_file["cities"]
+    }
+
+    function get_all_building_type(baseline){
+        if(!baseline) {
+            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+        } else {
+            index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+            index_file["building_type"].sort().push(["Select All"])
+        }
+
+        console.log(index_file["building_type"])
+        return index_file["building_type"]
+    }
+
+    function get_baseline_status(){
+        if(document.getElementById('show_ecm').checked) {
+            console.log("baseline = false")
+            return false
+        } else {
+            console.log("baseline = true")
+            return true
+        }
+    }
+
+    function is_baseline(datapoint){
+        if (datapoint['is_baseline'] == "true") {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    function get_baseline_datapoint_by_bldg_and_city(building_type,city){
+        return get_data_by_building_and_city(true,building_type,city)
     }
 
 }

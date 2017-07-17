@@ -60,27 +60,18 @@
 		"Water Systems Water Usage (m3/m2)": "end_uses_eui.water_systems_water_m3_per_m2",
 		"Total End Uses (GJ/m2)": "end_uses_eui.total_end_uses_gj_per_m2",
 		"Total End Uses Water (m3/m2)": "end_uses_eui.total_end_uses_water_m3_per_m2",
+		"Total End Uses (GJ)": "end_uses.total_end_uses_gj",
 		"Baseline" : "is_baseline"
 	},
-	"buildings": [
-		"FullServiceRestaurant",
-		"LargeHotel",
-		"LargeOffice",
-		"MediumOffice",
-		"MidriseApartment",
-		"Outpatient",
-		"PrimarySchool",
-		"QuickServiceRestaurant",
-		"RetailStandalone",
-		"SecondarySchool",
-		"SmallHotel",
-		"SmallOffice",
-		"RetailStripmall",
-		"Warehouse",
-		"Select All"
-	],
 	"views": {
-		"End Uses": ["Heating (GJ/m2)",
+		"End Uses-min": [
+			"Heating (GJ/m2)",
+			"Cooling (GJ/m2)",
+			"Total End Uses (GJ/m2)",
+			"Total End Uses Water (m3/m2)"
+		],
+		"End Uses": [
+			"Heating (GJ/m2)",
 			"Cooling (GJ/m2)",
 			"Interior Lighting (GJ/m2)",
 			"Interior Equipment (GJ/m2)",
@@ -154,83 +145,14 @@
 			"type": "number",
 			"ticks": 5
 		},
+		"Total End Uses (GJ)": {
+			"type": "number",
+			"ticks": 5
+		},
 		"Baseline": {
 			"type": "string"
 		}
 	},
-	"city": [
-		"Select All",
-		"Abbotsford",
-		"Bagotville",
-		"Baie Comeau",
-		"Brandon",
-		"Calgary Int'l",
-		"Charlottetown CDA",
-		"Churchill",
-		"Comox",
-		"Cranbrook",
-		"Edmonton Stony Plain",
-		"Estevan",
-		"Fort McMurray",
-		"Fort St John",
-		"Fredericton",
-		"Gander Int'l",
-		"Goose",
-		"Grand Prairie",
-		"Greenwood",
-		"Inuvik Ua",
-		"Kamloops",
-		"Kuujjuarapik",
-		"Kuujuaq",
-		"La Grande Riviere",
-		"Lake Eon",
-		"Lethbridge",
-		"London",
-		"Medicine Hat",
-		"Miramichi",
-		"Mont Joli",
-		"Montreal Int'l",
-		"Mount Forest",
-		"North Battleford",
-		"North Bay",
-		"Ottawa Int'l",
-		"Port Hardy",
-		"Prince George",
-		"Prince Rupert",
-		"Quebec City",
-		"Regina",
-		"Resolute",
-		"Riviere Du Loup",
-		"Roberval",
-		"Sable Island",
-		"Saint John",
-		"Sandspit",
-		"Saskatoon",
-		"Sault Ste Marie",
-		"Schefferville",
-		"Sept-Iles",
-		"Shearwater",
-		"Sherbrooke",
-		"Smithers",
-		"St Hubert",
-		"St John's",
-		"Ste Agathe Des Monts",
-		"Stephenville",
-		"Summerland",
-		"Swift Current",
-		"Sydney",
-		"The Pas",
-		"Thunder Bay",
-		"Timmins",
-		"Toronto Int'l",
-		"Trenton",
-		"Val d'Or",
-		"Vancouver Int'l",
-		"Victoria Int'l",
-		"Whitehorse",
-		"Windsor",
-		"Winnipeg Int'l"
-	],
 
 	"tabs": {
 		"Parallel Plot": [
@@ -272,11 +194,13 @@
 	"file_location":{
 		"baselines": {
 				"root": "./data/baselines",
-				"simulations": "./data/baselines/simulations.json"
+				"simulations": "./data/baselines/simulations.json",
+				"index_map": "./data/baselines/index_map.json"
 		},
 		"ecms" : {
 				"root": "./data/ecms",
-				"simulations": "./data/ecms/simulations.json"
+				"simulations": "./data/ecms/simulations.json",
+				"index_map": "./data/ecms/index_map.json"
 		},
 		"3d_model" : "/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html",
 		"eplus_table" : "/output/$(building_type)/$(epw_file)/eplus_table/$(id)-eplustbl.htm",
