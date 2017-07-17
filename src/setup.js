@@ -89,6 +89,11 @@ function setup() {
             //console.log(d);
             //console.log(d3.select("#pager"));
             option = d3.select("#bldgType").property("value")
+            if(!get_baseline_status()){
+                if (d['Baseline'] == "true"){
+                    return "#000000"
+                }
+            }
 
             if (option == "Select All") {
                 return color_by_bldg_type(d["Building Type"]);
@@ -420,6 +425,10 @@ function setup() {
             console.log("config_file.title[Building Type] = " + config_file.title["Building Type"]);
         }*/
         data = []
+
+        if(!baseline){
+            json = append_baseline_to_ecm(json, building_type, city)
+        }
         for (i = 0; i < json.length; i++) {
             //get osm path from config file
             root_path = ""
@@ -760,7 +769,7 @@ function setup() {
         return data
     }
 
-    function get_simulations_json(baseline, id = null, building_type = null, city = null){
+    function get_simulations_json(baseline){
         json_file_path = ""
         json_file = {}
         index_file = {}
@@ -910,4 +919,19 @@ function setup() {
         return get_data_by_building_and_city(true,building_type,city)
     }
 
+    function append_baseline_to_ecm(input_datapoints, building_type, city){
+        json_file_path = ""
+        json_file = {}
+        index_file = {}
+        baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
+        baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+
+        json_file_path = config_file["file_location"]["ecms"]["simulations"]
+        index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+        building_type = input_datapoints[0]['building_type']
+        city = input_datapoints[0]['geography']['city']
+        out = input_datapoints.concat(get_baseline_datapoint_by_bldg_and_city(building_type,city))
+        //console.log(out)
+        return out
+    }
 }
