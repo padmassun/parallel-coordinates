@@ -21,9 +21,7 @@ function setup() {
                 show_tab(tab_options)
                 return null
             })
-
         })
-
     }
 
     function show_tab(tab_options) {
@@ -46,7 +44,6 @@ function setup() {
             }
         }
     }
-
 
     function toggle_data_hide() {
         var button = document.getElementById('hideData');
@@ -83,7 +80,7 @@ function setup() {
             ]);
         var red_to_cyan = d3.scale.linear()
         .domain([3000, 8000])
-        .range(["cyan", "red"]);
+        .range(["red", "cyan"]);
 
         var color = function (d) {
             //console.log(d);
@@ -128,55 +125,11 @@ function setup() {
             //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
             //eval("dimensions = config_file.views[\"" + view_option + "\"]");
         })
-        //console.log("new v")
-        //console.log(dimensions)
-
-        /*  if (d3.select("#remove_singular").property("checked")) {
-                var remove = []
-                Object.keys(dimensions).forEach(function (keyID) {
-                    data_for_keyID = []
-                    data.forEach(function (d) {
-                        command = "data_for_keyID.push(d[\"" + keyID + "\"])"
-                        //console.log(command)
-                        eval(command)
-                    })
-                    max_value = Math.max.apply(null, data_for_keyID)
-                    min_value = Math.min.apply(null, data_for_keyID)
-                    if (max_value - min_value == 0) {
-                        remove.push(keyID)
-                    }
-                    console.log(data_for_keyID)
-                })
-                //return remove
-                console.log(dimensions)
-                console.log(remove)
-                console.log("^ REMOVE d3.select(#remove_singular).property(checked)")
-                remove.forEach(function (key) {
-                    delete dimensions[key]
-                })
-                console.log(dimensions)
-            }
-            */
-
-        /*
-            function toObject(arr) {
-                var rv = {};
-                for (var i = 0; i < arr.length; ++i)
-                    rv[arr[i]] = {};
-                return rv;
-            }
-
-            console.log(toObject(dimensions))
-            console.log("my_dimensions")
-            */
-
 
         // slickgrid needs each data element to have an id
         //console.log(data);
-        data.forEach(function (d, i) {
-
-            d.id = d.id || i;
-        });
+        //data
+        data.forEach(function (d, i) {d.id = d.id || i;});
         console.log(d3.select("#chart").property("scrollHeight"))
 
         var parcoords = d3.parcoords()("#chart")
@@ -203,53 +156,45 @@ function setup() {
             .createAxes()
             .brushMode("1D-axes-multi")
             .reorderable();
-        //console.log(document.body.clientHeight + " = document.body.clientHeight")
-        //console.log(parcoords.height() + " = parcoords.height()")
-        //dafault_dimensions = parcoords.dimensions()
-        //console.log(JSON.stringify(dafault_dimensions))
-        //console.log("dafault_dimensions ^")
-        function formatter(row, cell, value, columnDef, dataContext) {
-            return value;
-        }
-
-        var objDiv = document.getElementById("chart");
-        objDiv.scrollTop = objDiv.scrollHeight;
-        var column_keys = d3.keys(data[0]);
-        var columns = column_keys.map(function (key, i) {
-            if (key == "id") {
+            function formatter(row, cell, value, columnDef, dataContext) {
+                return value;
+            }
+            console.log(parcoords.dimensions())
+            var objDiv = document.getElementById("chart");
+            objDiv.scrollTop = objDiv.scrollHeight;
+            var column_keys = d3.keys(data[0]);
+            var columns = column_keys.map(function (key, i) {
+                if (key == "id") {
+                    return {
+                        id: "id",
+                        name: "id",
+                        field: "id",
+                        width: 1,
+                        minWidth: 350,
+                        toolTip: "id",
+                        maxWidth: 2
+                    }
+                };
                 return {
-                    id: "id",
-                    name: "id",
-                    field: "id",
-                    //width: 50,
-                    minWidth: 350,
-                    toolTip: "id"
-                    //maxWidth: 0
-                    /*, 
-                                  cssClass: "reallyHidden", 
-                                  headerCssClass: "reallyHidden"*/
-                              }
-                          };
-                          return {
-                            id: key,
-                            name: key,
-                            field: key,
-                            toolTip: key,
-                            sortable: true,
-                            formatter: formatter
-                        }
-                    });
+                    id: key,
+                    name: key,
+                    field: key,
+                    toolTip: key,
+                    sortable: true,
+                    formatter: formatter
+                }
+            });
 
-        var options = {
-            enableCellNavigation: true,
-            enableColumnReorder: false,
-            enableTextSelectionOnCells: true,
-            multiColumnSort: false
-        };
+            var options = {
+                enableCellNavigation: true,
+                enableColumnReorder: false,
+                enableTextSelectionOnCells: true,
+                multiColumnSort: false
+            };
 
-        var dataView = new Slick.Data.DataView();
-        var grid = new Slick.Grid("#grid", dataView, columns, options);
-        var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+            var dataView = new Slick.Data.DataView();
+            var grid = new Slick.Grid("#grid", dataView, columns, options);
+            var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 
         // wire up model events to drive the grid
         dataView.onRowCountChanged.subscribe(function (e, args) {
@@ -390,7 +335,6 @@ function setup() {
             dataView.setItems(data);
             dataView.endUpdate();
         };
-
     }
 
     function sigFigs(n, sig) {
@@ -403,14 +347,6 @@ function setup() {
     }
 
     function get_filtered_data(option) {
-        //may be i could also get another input as a filter, use if statements to select groups (end_uses or end_uses_eui) 
-        //based on filter and add or remove blocks from title... the filter could be an input from eventlisteners on the checkboxes
-        //parallel_plots_config.json 
-        /*console.log("config_file");
-        console.log(config_file);
-        console.log("config_file.title");
-        console.log(config_file.title);
-        */
         baseline = get_baseline_status()
         building_type = option[0]
         city = option[1]
@@ -419,17 +355,14 @@ function setup() {
         json = get_data_by_building_and_city(baseline,building_type,city)
         //console.log(json)
         title = JSON.parse(JSON.stringify(config_file)).title;
-        /*console.log(config_file.title)
-        if (!("Building Type" in title)){
-            title["Building Type"] = config_file.title["Building Type"];
-            console.log("config_file.title[Building Type] = " + config_file.title["Building Type"]);
-        }*/
         data = []
 
-        if(!baseline){
+        if(!baseline && document.getElementById('include_baseline').checked){
             json = append_baseline_to_ecm(json, building_type, city)
         }
+        console.log(json[0]['measures'])
         for (i = 0; i < json.length; i++) {
+            
             //get osm path from config file
             root_path = ""
             if(baseline){
@@ -441,26 +374,42 @@ function setup() {
             model_3d_file = root_path + config_file['file_location']['3d_model']
             os_report_file = root_path + config_file['file_location']['os_report']
             for (var j=0; j < json[i]['measures'].length; j++) {
-                if (json[i]['measures'][j]["name"] != "create_prototype_building"){
-                    continue
+                if (json[i]['measures'][j]["name"] == "create_prototype_building"){
+                    epw_file = json[i]['measures'][j]["arguments"]["epw_file"].replace(".epw","")
+
+                    osm_file_path = osm_file_path.replace("$(building_type)",json[i].building_type)
+                    osm_file_path = osm_file_path.replace("$(epw_file)",epw_file)
+                    osm_file_path = osm_file_path.replace("$(id)",json[i].run_uuid)
+
+                    model_3d_file = model_3d_file.replace("$(building_type)",json[i].building_type)
+                    model_3d_file = model_3d_file.replace("$(epw_file)",epw_file)
+                    model_3d_file = model_3d_file.replace("$(id)",json[i].run_uuid)
+
+                    os_report_file = os_report_file.replace("$(building_type)",json[i].building_type)
+                    os_report_file = os_report_file.replace("$(epw_file)",epw_file)
+                    os_report_file = os_report_file.replace("$(id)",json[i].run_uuid)
                 }
-                epw_file = json[i]['measures'][j]["arguments"]["epw_file"].replace(".epw","")
-
-                osm_file_path = osm_file_path.replace("$(building_type)",json[i].building_type)
-                osm_file_path = osm_file_path.replace("$(epw_file)",epw_file)
-                osm_file_path = osm_file_path.replace("$(id)",json[i].run_uuid)
-
-                model_3d_file = model_3d_file.replace("$(building_type)",json[i].building_type)
-                model_3d_file = model_3d_file.replace("$(epw_file)",epw_file)
-                model_3d_file = model_3d_file.replace("$(id)",json[i].run_uuid)
-
-                os_report_file = os_report_file.replace("$(building_type)",json[i].building_type)
-                os_report_file = os_report_file.replace("$(epw_file)",epw_file)
-                os_report_file = os_report_file.replace("$(id)",json[i].run_uuid)
             }
             x = {};
             x["compare"] = "<button class='compare-button' data-url='"+os_report_file+"' id='" + json[i].run_uuid + "'>Compare</button>"
             x["model"] = "<button class='view-3d-model-button' data-url='"+model_3d_file+"' id='" + json[i].run_uuid + "'>View Model</button>"
+            
+            for (var j=0; j < json[i]['measures'].length; j++) {
+                if(json[i]['measures'][j]["is_ecm"] == "false" || json[i]['measures'][j]["is_ecm"] == false || json[i]['measures'][j]["arguments"]["__SKIP__"] == true){
+                    continue
+                }else{
+                    measure_name = json[i]['measures'][j]["measure_class_name"]
+                    console.log(measure_name)
+                    Object.keys(json[i]['measures'][j]["arguments"]).forEach(function (argument) {
+                        if(argument != "__SKIP__"){
+                            console.log(argument)
+                            args_name = measure_name + "-" + argument
+                            console.log(args_name)
+                            x[args_name] = json[i]['measures'][j]["arguments"][argument]
+                        }
+                    }); 
+                }   
+            }
             //console.log(option)
             if (option[0] != "Select All" && json[i].building_type != option[0]) {
                 continue;
@@ -468,6 +417,7 @@ function setup() {
             if (option[1] != "Select All" && json[i].geography.city != option[1]) {
                 continue;
             }
+
             for (var key in title) {
                 if (title.hasOwnProperty(key)) {
                     command = "x[\"" + key + "\"] = " + "json[i]." + title[key];
@@ -476,10 +426,6 @@ function setup() {
                 }
             }
             x["osm"] = "<a href='"+osm_file_path+"'>OSM File</a> "
-            //console.log("<button class='view-3d-model-button' onclick=\"view_model('" + json[i].run_uuid + "')\">View 3D Model</button>")
-
-            //x["model"] = "<button type=\"button\" onclick=\"view_model(" + json[i].run_uuid + ")\">View 3D Model</button>"
-            //x["model"] = "<a href='./data/osm_files/" + json[i].run_uuid + "_3d.html'>View 3D Model</a> "
             x["id"] = json[i].run_uuid;
             //console.log(x);
             Object.keys(x).forEach(function (key) {
@@ -487,7 +433,7 @@ function setup() {
                     x[key] = sigFigs(x[key], 4)
                 }
             });
-
+            console.log(x)
             data.push(x)
         };
         //console.log(data)
@@ -495,17 +441,7 @@ function setup() {
     }
 
     function setup_options() {
-        //options.unshift("Select All")
-        //console.log(options + " < options in setup_options")
-        /*console.log(config_file.tabs["End Uses Data"][0])
-        var viewType = d3.select('body')
-        viewType.append('div')
-            .attr('id',config_file.tabs["End Uses Data"][0])
-            .append('tr')
-            .append('th')
-            .append('th')
-            */
-            var tab_options = Object.keys(config_file.tabs)
+        var tab_options = Object.keys(config_file.tabs)
         //console.log(tab_options)
         var tabs = d3.select('#tabs')
         tabs.selectAll('option')
@@ -554,7 +490,9 @@ function setup() {
         d3.select('#update_bldgType').on('click', null)
 
         d3.select('#update_bldgType').on('click', function () {
-            d3.select(".parcoords svg").remove();
+            document.getElementById('chart').innerHTML = "";
+            document.getElementById('grid').innerHTML = "";
+            document.getElementById('pager').innerHTML = "";
             //console.log(d3.select('#update_bldgType') + "<< select")
             option = [d3.select("#bldgType").property("value"), d3.select("#cityType").property("value")]
             //console.log(option + " < Option");
@@ -591,7 +529,6 @@ function setup() {
             .text(function (d) {
                 return d;
             });
-            
         })
     }
 
@@ -933,5 +870,9 @@ function setup() {
         out = input_datapoints.concat(get_baseline_datapoint_by_bldg_and_city(building_type,city))
         //console.log(out)
         return out
+    }
+
+    function get_data_dimensions(datapoint){
+
     }
 }
