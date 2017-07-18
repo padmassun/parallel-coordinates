@@ -67,8 +67,7 @@
 		"End Uses-min": [
 			"Heating (GJ/m2)",
 			"Cooling (GJ/m2)",
-			"Total End Uses (GJ/m2)",
-			"Total End Uses Water (m3/m2)"
+			"Total End Uses (GJ/m2)"
 		],
 		"End Uses": [
 			"Heating (GJ/m2)",
@@ -193,14 +192,14 @@
 
 	"file_location":{
 		"baselines": {
-				"root": "./data/baselines",
-				"simulations": "./data/baselines/simulations.json",
-				"index_map": "./data/baselines/index_map.json"
+			"root": "./data/baselines",
+			"simulations": "./data/baselines/simulations.json",
+			"index_map": "./data/baselines/index_map.json"
 		},
 		"ecms" : {
-				"root": "./data/ecms",
-				"simulations": "./data/ecms/simulations.json",
-				"index_map": "./data/ecms/index_map.json"
+			"root": "./data/ecms",
+			"simulations": "./data/ecms/simulations.json",
+			"index_map": "./data/ecms/index_map.json"
 		},
 		"3d_model" : "/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html",
 		"eplus_table" : "/output/$(building_type)/$(epw_file)/eplus_table/$(id)-eplustbl.htm",
