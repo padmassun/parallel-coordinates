@@ -104,28 +104,7 @@ function setup() {
         //console.log(JSON.parse(JSON.stringify(config_file)).dimensions)
         //console.log("JSON.parse(JSON.stringify(config_file)).dimensions")
 
-
-        dimensions = JSON.parse(JSON.stringify(config_file)).dimensions;
-        views = []
-        command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
-        //console.log(command)
-        eval(command)
-        console.log(views)
-        out = ["Building Type"]
-        if (d3.select("#bldgType").property("value") == "Select All" && views.indexOf("Building Type") == -1){
-            views.unshift("Building Type")
-        }
-        console.log(views)
-        Object.keys(dimensions).forEach(function (dim) {
-            //console.log(dim)
-
-            if (views.indexOf(dim) == -1) {
-                eval("delete dimensions[\"" + dim + "\"]")
-            }
-            //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
-            //eval("dimensions = config_file.views[\"" + view_option + "\"]");
-        })
-
+        dimensions = get_dimensions(data[0])
         // slickgrid needs each data element to have an id
         //console.log(data);
         //data
@@ -403,7 +382,7 @@ function setup() {
                     Object.keys(json[i]['measures'][j]["arguments"]).forEach(function (argument) {
                         if(argument != "__SKIP__"){
                             console.log(argument)
-                            args_name = measure_name + "-" + argument
+                            args_name = measure_name + "-" + argument + " (ECM)"
                             console.log(args_name)
                             x[args_name] = json[i]['measures'][j]["arguments"][argument]
                         }
@@ -872,7 +851,46 @@ function setup() {
         return out
     }
 
-    function get_data_dimensions(datapoint){
+    function get_dimensions(data_point){
+        dimensions = generate_dimensions(data_point)
+        views = []
+        command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
+        //console.log(command)
+        eval(command)
+        console.log(views)
+        out = ["Building Type"]
+        if (d3.select("#bldgType").property("value") == "Select All" && views.indexOf("Building Type") == -1){
+            views.unshift("Building Type")
+        }
+        console.log(views)
+        console.log(dimensions)
+        Object.keys(dimensions).forEach(function (dim) {
+            //console.log(dim)
 
+            if (views.indexOf(dim) == -1 && dim.indexOf("(ECM)") == -1) {
+                eval("delete dimensions[\"" + dim + "\"]")
+            }
+            //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
+            //eval("dimensions = config_file.views[\"" + view_option + "\"]");
+        })
+        console.log(dimensions)
+        return dimensions
+    }
+
+    function generate_dimensions(data_point){
+        
+        default_dimensions = JSON.parse(JSON.stringify(config_file)).dimensions
+        console.log(default_dimensions)
+        out_dimensions = {}
+        Object.keys(data_point).forEach(function (keys) {
+            if(Object.keys(default_dimensions).indexOf(keys) == -1){
+                out_dimensions[keys] = {}
+            }
+        });
+        console.log(out_dimensions)
+        out_dimensions = $.extend({}, out_dimensions, default_dimensions, );
+        //out_dimensions.concat(default_dimensions)
+
+        return out_dimensions
     }
 }
