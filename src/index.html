@@ -113,6 +113,19 @@
 		z-index: 10;
 	}
 
+	#tool-tip {
+		background: #eee;
+		box-shadow: 0 0 5px #999999;
+		color: #333;
+		display: none;
+		font-size: 12px;
+		left: 130px;
+		padding: 5px;
+		position: absolute;
+		text-align: left;
+		top: 95px;
+		z-index: 10;
+	}
 	rect {
 		cursor: pointer;
 		stroke-width: 2;
@@ -180,8 +193,18 @@
 			<iframe id="pieChart2-data"></iframe>
 		</div>
 	</div>
-	<div id="tooltip">
-		<p>Tooltip: Scrolling on top of the axis name rotates it<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+	<div id="tool-tip">
+		<p>
+		# Scrolling on top of the axis name rotates it
+		<br>
+		# Click on an axis tick and drag it to left or right to reorder the axis
+		<br>
+		# Double click on an axis tick to flip the axis
+		<br>
+		# Hover over the axis, when the cusor changes to a +, drag it on the axis to filter the results</p>
+	</div>
+	<div id="spaceholder3">
+		<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
 	</div>
 	<script>
 		setup()
