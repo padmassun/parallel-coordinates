@@ -115,7 +115,7 @@ function setup() {
             //.height(d3.max([document.body.clientHeight - 100, 200]))
             .height(d3.select("#chart").property("scrollHeight"))
             .margin({
-                top: 100,
+                top: 150,
                 left: 150,
                 right: 100,
                 bottom: 16
@@ -131,10 +131,13 @@ function setup() {
             .mode("queue")
             .render()
             .dimensions(dimensions)
-            //.render()
             .createAxes()
             .brushMode("1D-axes-multi")
             .reorderable();
+
+            //console.log(d3.selectAll(".label"))
+            wrap(d3.selectAll(".label"))
+
             function formatter(row, cell, value, columnDef, dataContext) {
                 return value;
             }
@@ -149,9 +152,9 @@ function setup() {
                         name: "id",
                         field: "id",
                         width: 1,
-                        minWidth: 350,
+                        minWidth: 1,
                         toolTip: "id",
-                        maxWidth: 2
+                        maxWidth: 1
                     }
                 };
                 return {
@@ -341,7 +344,7 @@ function setup() {
         }
         console.log(json[0]['measures'])
         for (i = 0; i < json.length; i++) {
-            
+
             //get osm path from config file
             root_path = ""
             if(baseline){
@@ -878,13 +881,16 @@ function setup() {
     }
 
     function generate_dimensions(data_point){
-        
+
         default_dimensions = JSON.parse(JSON.stringify(config_file)).dimensions
         console.log(default_dimensions)
         out_dimensions = {}
         Object.keys(data_point).forEach(function (keys) {
             if(Object.keys(default_dimensions).indexOf(keys) == -1){
-                out_dimensions[keys] = {}
+                out_dimensions[keys] = {
+                    title : split_camel_case(keys)
+                }
+                console.log(split_camel_case(keys))
             }
         });
         console.log(out_dimensions)
@@ -892,5 +898,43 @@ function setup() {
         //out_dimensions.concat(default_dimensions)
 
         return out_dimensions
+    }
+
+    function wrap(text) {
+        width = 150
+        //max = []
+        text.each(function() {
+            var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(-0.5),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+            //console.log(words) 
+            while (word = words.shift()) {
+              line.unshift(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                lineNumber++
+                line.shift();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight * -1  + dy + "em").text(word);
+            }
+        }
+        //max.push(lineNumber * lineHeight + dy)
+    });
+        //console.log(max)
+        //return max
+    }
+
+    function split_camel_case(str){
+        out = str
+        return out.replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace("-", ' ')
+        .replace(/^./, function(str){ return str.toUpperCase(); })
     }
 }

@@ -776,7 +776,7 @@ pc.createAxes = function() {
       .attr({
         "text-anchor": "middle",
         "y": 0,
-        "transform": "translate(0,-5) rotate(2" + __.dimensionTitleRotation + ")",
+        "transform": "translate(0,-5) rotate(" + __.dimensionTitleRotation + ")",
         "x": 0,
         "class": "label"
       })
