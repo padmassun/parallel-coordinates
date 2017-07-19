@@ -157,7 +157,7 @@
 		"Parallel Plot": [
 			"chart",
 			"bldgType_selector",
-			"tooltip",
+			"spaceholder3",
 			"grid",
 			"pager"
 		],
@@ -171,7 +171,8 @@
 			"pieChart1-data",
 			"pieChart2-data",
 			"piedata"
-		]
+		],
+		"Tooltip" :[]
 	},
 
 	"End Uses Data": [

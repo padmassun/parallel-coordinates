@@ -7,6 +7,7 @@ function setup() {
     manage_tabs()
     update_plot_with_options()
     toggle_data_hide()
+    view_tooltip()
     //draw_pie_chart("#pieChart1", "000ca287-f6b6-47d3-945f-65e907544110")
     //draw_pie_chart("#pieChart2", "0a02f204-9e1d-4e09-811b-25ee2377cf08")
     function manage_tabs() {
@@ -17,6 +18,10 @@ function setup() {
             d3.select(item).on('click', function () {
                 //console.log(item.id)
                 tab_options = config_file.tabs[item.id]
+                console.log(tab_options)
+                if (tab_options.length == 0){
+                    return null
+                }
                 //console.log(tab_options)
                 show_tab(tab_options)
                 return null
@@ -26,7 +31,7 @@ function setup() {
 
     function show_tab(tab_options) {
         var elems = document.body.children
-        //console.log(elems)
+        console.log(tab_options)
         for (var i = 0, len = elems.length; i < len; i++) {
             //console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
@@ -889,6 +894,7 @@ function setup() {
             if(Object.keys(default_dimensions).indexOf(keys) == -1){
                 out_dimensions[keys] = {
                     title : split_camel_case(keys)
+                    //tickPadding : 5
                 }
                 console.log(split_camel_case(keys))
             }
@@ -936,5 +942,25 @@ function setup() {
         return out.replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace("-", ' ')
         .replace(/^./, function(str){ return str.toUpperCase(); })
+    }
+
+    function view_tooltip(){
+        var path = d3.select('#Tooltip');
+        console.log(path)
+        var tooltip = d3.select('#tool-tip')
+        console.log(tooltip)
+
+        path.on('mouseover', function (d) {
+            tooltip.style('display', 'block');
+        });
+
+        path.on('mouseout', function () {
+            tooltip.style('display', 'none');
+        });
+
+        path.on('mousemove', function (d) {
+            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+            .style('left', (d3.event.layerX + 10) + 'px');
+        });
     }
 }
