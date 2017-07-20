@@ -55,12 +55,12 @@ function setup() {
         button.onclick = function () {
             var grid = document.getElementById('grid');
             var pager = document.getElementById('pager');
-            if (grid.style.visibility !== 'hidden') {
-                grid.style.visibility = 'hidden';
-                pager.style.visibility = 'hidden';
+            if (grid.style.display != 'none') {
+                grid.style.display = 'none';
+                pager.style.display = 'none';
             } else {
-                grid.style.visibility = 'visible';
-                pager.style.visibility = 'visible';
+                grid.style.display = 'block';
+                pager.style.display = 'block';
             }
             return null
         };
@@ -74,7 +74,7 @@ function setup() {
         return xmlhttp.responseText;
     }
 
-    function setup_canvas(data) {
+    function setup_canvas(data, dimensions = null) {
         var color_by_bldg_type = d3.scale.ordinal()
         .domain(get_all_building_type(get_baseline_status()))
         .range(["#3366cc", "#dc3912", "#ff9900", "#109618",
@@ -107,11 +107,21 @@ function setup() {
 
         };
         view_option = d3.select("#viewType").property("value")
-        var dimensions = {}
+        //var dimensions = {}
         //console.log(JSON.parse(JSON.stringify(config_file)).dimensions)
         //console.log("JSON.parse(JSON.stringify(config_file)).dimensions")
-
-        dimensions = get_dimensions(data[0])
+        if (dimensions == null){
+            dimensions = get_dimensions(data[0])
+            //console.log(dimensions)
+        }else{
+            //console.log(dimensions)
+            dimensions = $.extend({}, dimensions, get_dimensions(data[0], ))
+            Object.keys(dimensions).forEach(function (key) {
+                delete dimensions[key].yscale
+            });
+            //console.log(dimensions)
+        }
+        
 
         if (data.length > 2 && document.getElementById('delete_single').checked){
             Object.keys(dimensions).forEach(function (key) {
@@ -314,29 +324,11 @@ function setup() {
             gridUpdate(d);
         });
 
+        var refresh_bldgType_button = document.getElementById('refresh_bldgType');
+        refresh_bldgType_button.style.visibility = 'hidden'
+
         parcoords.on("brushend", function (d) {
-            /*d3.select("#pieChart1").html("")
-            d3.select("#pieChart2").html("")
-            if (d[0] != null) {
-                draw_pie_chart("#pieChart1", d[0])
-                pieChartData = document.getElementById('pieChart1-data');
-                pieChartData.src = "./test.html";
-                pieChartData.style = "width:100%;"
-                $('iframe').load(function () {
-                    this.style.height =
-                        this.contentWindow.document.body.offsetHeight + 'px';
-                });
-            }
-            if (d[1] != null) {
-                draw_pie_chart("#pieChart2", d[1])
-                pieChartData = document.getElementById('pieChart2-data');
-                pieChartData.src = "./test.html";
-                pieChartData.style = "width:100%;"
-                $('iframe').load(function () {
-                    this.style.height =
-                        this.contentWindow.document.body.offsetHeight + 'px';
-                });
-            }*/
+            refresh_bldgType_button.style.visibility = 'visible'
         })
 
         function gridUpdate(data) {
@@ -344,6 +336,17 @@ function setup() {
             dataView.setItems(data);
             dataView.endUpdate();
         };
+
+        d3.select('#refresh_bldgType').on('click', function () {
+            new_data = parcoords.brushed()
+            if (new_data.length > 0){
+                document.getElementById('chart').innerHTML = "";
+                document.getElementById('grid').innerHTML = "";
+                document.getElementById('pager').innerHTML = "";
+                setup_canvas(new_data,parcoords.dimensions())
+            }
+            return null
+        })
     }
 
     function sigFigs(n, sig) {
@@ -499,6 +502,7 @@ function setup() {
         d3.select('#update_bldgType').on('click', null)
 
         d3.select('#update_bldgType').on('click', function () {
+            document.getElementById('refresh_bldgType').style.visibility = 'hidden';
             document.getElementById('chart').innerHTML = "";
             document.getElementById('grid').innerHTML = "";
             document.getElementById('pager').innerHTML = "";
