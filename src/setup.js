@@ -31,7 +31,7 @@ function setup() {
 
     function show_tab(tab_options) {
         var elems = document.body.children
-        console.log(tab_options)
+        //console.log(tab_options)
         for (var i = 0, len = elems.length; i < len; i++) {
             //console.log(elems[i])
             if (tab_options.includes(elems[i].id) || (elems[i].id == "tabs")) {
@@ -83,9 +83,11 @@ function setup() {
             "#aaaa11", "#6633cc", "#e67300", "#8b0707",
             "#651067", "#329262", "#5574a6", "#3b3eac"
             ]);
+        end_use_extent = d3.extent(data, function(d) { return +d["Total End Uses (GJ)"]; });
+        console.log(end_use_extent)
         var red_to_cyan = d3.scale.linear()
-        .domain([3000, 8000])
-        .range(["red", "cyan"]);
+        .domain(end_use_extent)
+        .range(["#8ff727", "#ea5833"]);
 
         var color = function (d) {
             //console.log(d);
@@ -100,7 +102,7 @@ function setup() {
             if (option == "Select All") {
                 return color_by_bldg_type(d["Building Type"]);
             } else {
-                return red_to_cyan(d["HDD"]);
+                return red_to_cyan(d["Total End Uses (GJ)"]);
             }
 
         };
@@ -114,21 +116,30 @@ function setup() {
         //console.log(data);
         //data
         data.forEach(function (d, i) {d.id = d.id || i;});
-        console.log(d3.select("#chart").property("scrollHeight"))
+        //console.log(d3.select("#chart").property("clientWidth"))
+        chart_width = Math.max(Object.keys(dimensions).length*200, 1500);
+        document.getElementById('chart').style.width = chart_width+"px"
+        //console.log(d3.select("#chart").property("clientWidth"))
+        
+        left_padding = 30
+        if (Object.keys(dimensions).indexOf("Building Type") != -1){
+            left_padding = 125
+        }
 
         var parcoords = d3.parcoords()("#chart")
             //.height(d3.max([document.body.clientHeight - 100, 200]))
             .height(d3.select("#chart").property("scrollHeight"))
+            .width(chart_width)
             .margin({
                 top: 150,
-                left: 150,
+                left: left_padding,
                 right: 100,
                 bottom: 16
             })
             .interactive()
             .rotateLabels(true)
             .smoothness(0.2)
-            .bundlingStrength(0)
+            .bundlingStrength(0.1)
             .data(data)
             .color(function (d) {
                 return color(d)
@@ -146,7 +157,7 @@ function setup() {
             function formatter(row, cell, value, columnDef, dataContext) {
                 return value;
             }
-            console.log(parcoords.dimensions())
+            //console.log(parcoords.dimensions())
             var objDiv = document.getElementById("chart");
             objDiv.scrollTop = objDiv.scrollHeight;
             var column_keys = d3.keys(data[0]);
@@ -347,7 +358,7 @@ function setup() {
         if(!baseline && document.getElementById('include_baseline').checked){
             json = append_baseline_to_ecm(json, building_type, city)
         }
-        console.log(json[0]['measures'])
+        //console.log(json[0]['measures'])
         for (i = 0; i < json.length; i++) {
 
             //get osm path from config file
@@ -386,12 +397,12 @@ function setup() {
                     continue
                 }else{
                     measure_name = json[i]['measures'][j]["measure_class_name"]
-                    console.log(measure_name)
+                    //console.log(measure_name)
                     Object.keys(json[i]['measures'][j]["arguments"]).forEach(function (argument) {
                         if(argument != "__SKIP__"){
-                            console.log(argument)
+                            //console.log(argument)
                             args_name = measure_name + "-" + argument + " (ECM)"
-                            console.log(args_name)
+                            //console.log(args_name)
                             x[args_name] = json[i]['measures'][j]["arguments"][argument]
                         }
                     }); 
@@ -420,7 +431,7 @@ function setup() {
                     x[key] = sigFigs(x[key], 4)
                 }
             });
-            console.log(x)
+            //console.log(x)
             data.push(x)
         };
         //console.log(data)
@@ -752,9 +763,9 @@ function setup() {
         }
         ids = []
         if (building_type == "Select All"){
-            console.log("building_type == Select All")
+            //console.log("building_type == Select All")
             if (city == "Select All"){
-                console.log("city == Select All")
+                //console.log("city == Select All")
                 return get_simulations_json(baseline)
             }else{
                 all_building_types = get_all_building_type(baseline)
@@ -767,12 +778,12 @@ function setup() {
                     //ids.push(index_file['datapoint'][all_building_types[i]][city])
                     ids = ids.concat(index_file['datapoint'][all_building_types[i]][city])
                 }
-                console.log("city != Select All")
+                //console.log("city != Select All")
                 //console.log(ids)
             }
 
         }else{
-            console.log("building_type != Select All")
+            //console.log("building_type != Select All")
             if (city == "Select All"){
                 all_cities = get_all_cities(baseline)
                 for (var i = 0; i < all_cities.length; i++) {
@@ -783,7 +794,7 @@ function setup() {
                     //console.log(index_file['datapoint'][building_type][all_cities[i]])
                     ids = ids.concat(index_file['datapoint'][building_type][all_cities[i]])
                 }
-                console.log("city == Select All")
+                //console.log("city == Select All")
                 //console.log(ids)
             }else{  
                 ids = index_file['datapoint'][building_type][city]
@@ -791,7 +802,7 @@ function setup() {
                     console.log("datapoint for building_type: "+ building_type +"and City: "+ city + "was not found")
                 }
                 else{
-                    console.log("city != Select All")
+                    //console.log("city != Select All")
                     //console.log(ids)
                 }
             }
@@ -817,16 +828,16 @@ function setup() {
             index_file["building_type"].sort().push(["Select All"])
         }
 
-        console.log(index_file["building_type"])
+        //console.log(index_file["building_type"])
         return index_file["building_type"]
     }
 
     function get_baseline_status(){
         if(document.getElementById('show_ecm').checked) {
-            console.log("baseline = false")
+            //console.log("baseline = false")
             return false
         } else {
-            console.log("baseline = true")
+            //console.log("baseline = true")
             return true
         }
     }
@@ -865,13 +876,13 @@ function setup() {
         command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
         //console.log(command)
         eval(command)
-        console.log(views)
+        //console.log(views)
         out = ["Building Type"]
         if (d3.select("#bldgType").property("value") == "Select All" && views.indexOf("Building Type") == -1){
             views.unshift("Building Type")
         }
-        console.log(views)
-        console.log(dimensions)
+        //console.log(views)
+        //console.log(dimensions)
         Object.keys(dimensions).forEach(function (dim) {
             //console.log(dim)
 
@@ -881,7 +892,7 @@ function setup() {
             //console.log(JSON.parse(JSON.stringify(config_file)).views[view_option])
             //eval("dimensions = config_file.views[\"" + view_option + "\"]");
         })
-        console.log(dimensions)
+        //console.log(dimensions)
         return dimensions
     }
 
@@ -896,10 +907,10 @@ function setup() {
                     title : split_camel_case(keys)
                     //tickPadding : 5
                 }
-                console.log(split_camel_case(keys))
+                //console.log(split_camel_case(keys))
             }
         });
-        console.log(out_dimensions)
+        //console.log(out_dimensions)
         out_dimensions = $.extend({}, out_dimensions, default_dimensions, );
         //out_dimensions.concat(default_dimensions)
 
@@ -946,9 +957,9 @@ function setup() {
 
     function view_tooltip(){
         var path = d3.select('#Tooltip');
-        console.log(path)
+        //console.log(path)
         var tooltip = d3.select('#tool-tip')
-        console.log(tooltip)
+        //console.log(tooltip)
 
         path.on('mouseover', function (d) {
             tooltip.style('display', 'block');
