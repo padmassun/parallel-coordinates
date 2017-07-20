@@ -158,15 +158,18 @@
 			"chart",
 			"bldgType_selector",
 			"spaceholder3",
+			"spaceholder4",
 			"grid",
 			"pager"
 		],
 		"3D  Model": [
+			"spaceholder4",
 			"model_3d_html"
 		],
 		"End Uses Data": [
 			"end-uses-data-tab",
 			"spaceholder2",
+			"spaceholder4",
 			"spaceholder",
 			"pieChart1-data",
 			"pieChart2-data",
