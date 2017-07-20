@@ -412,7 +412,7 @@ function setup() {
                     Object.keys(json[i]['measures'][j]["arguments"]).forEach(function (argument) {
                         if(argument != "__SKIP__"){
                             //console.log(argument)
-                            args_name = measure_name + "-" + argument + " (ECM)"
+                            args_name = measure_name + " [" + argument + "] (ECM)"
                             //console.log(args_name)
                             x[args_name] = json[i]['measures'][j]["arguments"][argument]
                         }
@@ -962,7 +962,8 @@ function setup() {
     function split_camel_case(str){
         out = str
         return out.replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace("-", ' ')
+        .replace(/\-/g, ' ')
+        .replace(/\_/g, ' ')
         .replace(/^./, function(str){ return str.toUpperCase(); })
     }
 
