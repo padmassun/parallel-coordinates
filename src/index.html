@@ -49,8 +49,9 @@
 	#pager {
 		position: fixed;
 		width: 100%;
-		bottom: 30%;
+		bottom: 25%;
 		height: 20px;
+		background-color: #f1f1f1;
 	}
 
 	#bldgType_selector {
@@ -64,7 +65,8 @@
 		position: fixed;
 		width: 100%;
 		bottom: 0px;
-		height: 30%;
+		height: 25%;
+		background-color: #f1f1f1;
 	}
 
 	.slick-row:hover {
@@ -161,6 +163,8 @@
 		<select id="viewType"></select>
 		<button id="update_bldgType">Update Plot</button>
 		<button id="hideData">Show/Hide Data table</button>
+		<button id="refresh_bldgType">Refresh Plot</button>
+		<br><br>
 		<input type="checkbox" id="show_ecm" checked></input>
 		<label for="show_ecm">Show ECMs</label>
 		<input type="checkbox" id="include_baseline"></input>
@@ -203,12 +207,18 @@
 		<br>
 		# Double click on an axis tick to flip the axis
 		<br>
-		# Hover over the axis, when the cusor changes to a +, drag it on the axis to filter the results</p>
+		# Hover over the axis, when the cusor changes to a +, drag it on the axis to filter the results
+		<br>
+		# After filtering the results, the "Refresh Plot" button will appear. pressing this button will
+		<br>
+		repopulate the graph and the datagrid with the filtered results
+		</p>
 	</div>
 	<div id="spaceholder3">
 		<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
 	</div>
 	<script>
+		document.getElementById('refresh_bldgType').style.visibility = 'hidden';
 		setup()
 	</script>
 </body>
