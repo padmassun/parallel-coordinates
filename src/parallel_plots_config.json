@@ -194,12 +194,12 @@
 	"file_location":{
 		"baselines": {
 			"root": "./data/baselines",
-			"simulations": "./data/baselines/simulations.json",
+			"simulations": "./data/baselines/min-simulations.json",
 			"index_map": "./data/baselines/index_map.json"
 		},
 		"ecms" : {
 			"root": "./data/ecms",
-			"simulations": "./data/ecms/simulations.json",
+			"simulations": "./data/ecms/min-simulations.json",
 			"index_map": "./data/ecms/index_map.json"
 		},
 		"3d_model" : "/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html",
