@@ -126,7 +126,7 @@ function setup() {
         if (data.length > 2 && document.getElementById('delete_single').checked){
             Object.keys(dimensions).forEach(function (key) {
                 extent = d3.extent(data, function(d) { return +d[key]; });
-                if (extent[0]==extent[1]){
+                if (extent[0]==extent[1] && key != "Building Type"){
                     console.log("delete dimensions[\"" + key + "\"]")
                     eval("delete dimensions[\"" + key + "\"]")
                 }
