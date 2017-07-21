@@ -31,7 +31,7 @@ docker build -t nodeserver .
 execute the following command to run the dockerized server
 
 ```
-docker run -it -d -p 8080:8080 -v `pwd`:/dataviz nodeserver
+docker run -it -d -p 8080:8080 -v `pwd`:/dataviz --restart=always nodeserver
 ```
 
 Next use your browser and go to `http://localhost:8080/` to access the Parallel coordinate plot
