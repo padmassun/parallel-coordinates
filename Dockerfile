@@ -1,24 +1,21 @@
 FROM alpine:3.5
 
-ENV BUILD_PACKAGES bash curl-dev ruby-dev build-base sqlite-dev tar nodejs
-ENV RUBY_PACKAGES ruby ruby-io-console ruby-bundler
-ENV RUBY_GEMS  bundler rubygems-bundler sqlite3 json
+ENV BUILD_PACKAGES bash curl-dev nodejs
 
 # Update
 RUN apk update && \
 	apk upgrade && \
 	apk add $BUILD_PACKAGES && \
-	apk add $RUBY_PACKAGES && \
-	gem install --no-rdoc --no-ri $RUBY_GEMS  && \
 	rm -rf /var/cache/apk/*
 
-RUN mkdir -p /dataviz/src
+RUN mkdir -p /dataviz
 
-WORKDIR /dataviz
+VOLUME ["/dataviz"]
 
-ADD ./src/package.json /dataviz/src/
+ADD setup.sh /setup.sh
 
-RUN cd ./src && pwd && ls && npm install
+RUN chmod 755 /setup.sh
 
 EXPOSE  8080
-CMD ["node", "server.js"]
+
+CMD ["/bin/bash" , "/setup.sh"]
