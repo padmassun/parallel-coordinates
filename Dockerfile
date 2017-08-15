@@ -1,6 +1,6 @@
-FROM alpine:3.5
+FROM alpine
 
-ENV BUILD_PACKAGES bash curl-dev nodejs
+ENV BUILD_PACKAGES bash curl-dev git nodejs
 
 # Update
 RUN apk update && \
