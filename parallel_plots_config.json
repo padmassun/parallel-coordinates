@@ -196,12 +196,12 @@
 
 	"file_location":{
 		"baselines": {
-			"root": "./data/baselines",
+			"root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-baselines/master",
 			"simulations": "./data/baselines/min-simulations.json",
 			"index_map": "./data/baselines/index_map.json"
 		},
 		"ecms" : {
-			"root": "./data/ecms",
+			"root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-ecms/master",
 			"simulations": "./data/ecms/min-simulations.json",
 			"index_map": "./data/ecms/index_map.json"
 		},

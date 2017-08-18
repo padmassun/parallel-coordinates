@@ -359,6 +359,10 @@ function setup() {
             dataItem = args.grid.getDataItem(args.row)
             //console.log(dataItem)
 
+            function htmlEntities(str) {
+                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
             /**
              * checks clicking on view model button inside slickgrid
              * if the view model button is clicked it sets the iframe source 
@@ -379,6 +383,10 @@ function setup() {
              * checks clicking on compare button inside slickgrid.
              * if the compare button is clicked it renders the OpenStudio Results in
              * the pieChart1-data and pieChart2-data iframes
+             *
+             * There is a toggle of which piechart is active and draws on it.
+             * For example, it draws on the left side first, then right, then 
+             *      overides left, then right etc.
              */
             if ($(e.target).hasClass('compare-button')){
                 if (pie1_active) {
@@ -400,6 +408,7 @@ function setup() {
                         draw_pie_chart("#pieChart2", dataItem)
                         pieChartData = document.getElementById('pieChart2-data');
                         pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'));
+                        //pieChartData.src = $(get_file(e.target.getAttribute('data-url')));
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
                             this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
@@ -753,7 +762,7 @@ function setup() {
         var legendSpacing = 4;
 
         //set color scheme
-        var color = d3.scale.ordinal(d3.scale.category20());
+        //var color = d3.scale.ordinal(d3.scale.category20());
 
         //draw tooltip showing the usage value and percent
         var tooltip = d3.select(domID)
@@ -862,7 +871,7 @@ function setup() {
         .style('fill', color)
         .style('stroke', color);
 
-        //draw the text corresponding to the square
+        //draw the text corresponding labels to the square in the legend
         legend.append('text')
         .attr('x', legendRectSize + legendSpacing)
         .attr('y', legendRectSize - legendSpacing)
@@ -871,15 +880,23 @@ function setup() {
         });
     }
 
+    /**
+     * @param  {String} id: it is the uuid of the datapoint
+     * @param  {Boolean} baseline: the status of the simulation view
+     * @return {Hash} data: returns data in a format compatible with D3 pie chart
+     */
     function get_pie_data_by_id(id, baseline = true) {
-        json = get_simulations_json(baseline);
+        json = get_data_by_id(id,baseline);
         title = JSON.parse(JSON.stringify(config_file))["pie-data"];
         var data = []
+        //itterated through the grabbed data
         for (i = 0; i < json.length; i++) {
             if (json[i].run_uuid != id) {
                 continue
             }
             console.log("id = " + id + " < Lookin for > found " + json[i].run_uuid)
+            //looks up config_file["pie-data"] to determine which data should 
+            //be included in the pie chart
             for (var key in title) {
                 if (title.hasOwnProperty(key)) {
                     x = {};
@@ -898,12 +915,19 @@ function setup() {
         return data
     }
 
+    /**
+     * @param  {Hash} datapoint: contains the datapoint with filtered data
+     * @return {Hash} data: returns data in a format compatible with D3 pie chart
+     */
     function extract_data_for_pie(datapoint) {
         title = JSON.parse(JSON.stringify(config_file))["pie-data"];
         //console.log(title);
         //console.log(datapoint);
         //console.log(datapoint.length);
         var data = []
+
+        //looks up config_file["pie-data"] to determine which data should 
+        //be included in the pie chart
         for (var key in title) {
             //console.log(title[key])
             if (title.hasOwnProperty(key)) {
@@ -923,22 +947,54 @@ function setup() {
         return data
     }
 
+    /**
+     * ************************************************************************
+     * ************************************************************************
+     * | ONE OF THE TWO METHODS WHICH READS THE SIMULATIONS.JSON FILE DIRECTLY |
+     * ************************************************************************
+     * ************************************************************************
+     * This method reads the entire simulations.json file based on the location found in the 
+     *      config_file["file_location"][<baselines/ecms>]["simulations"]
+     * 
+     * @param  {Boolean} baseline: contains the baseline status
+     * @return {Hash} data: returns the entire simulations.json file found on
+     *          config_file["file_location"][<baselines/ecms>]["simulations"]
+     */
     function get_simulations_json(baseline){
         json_file_path = ""
-        json_file = {}
-        index_file = {}
+        //json_file = {}
+        //index_file = {}
         baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
-        baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+        //baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
         if (baseline){
             json_file_path = baseline_json_file_path
-            index_file = baseline_index_file
+            //index_file = baseline_index_file
         }else{
             json_file_path = config_file["file_location"]["ecms"]["simulations"]
-            index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
+            //index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
         }
         return JSON.parse(get_file(json_file_path));
     }
 
+    /**
+     * ************************************************************************
+     * ************************************************************************
+     * | ONE OF THE TWO METHODS WHICH READS THE SIMULATIONS.JSON FILE DIRECTLY |
+     * ************************************************************************
+     * ************************************************************************
+     * This method teads the entire simulations.json file based on the location found in the 
+     *      config_file["file_location"][<baselines/ecms>]["simulations"]
+     *      and returns the data based on the uuid-to-index mapping found in the
+     *      location stated in config_file["file_location"][<baselines/ecms>]["index_map"]
+     *      
+     * @param  {Array/String}: id: uuid or an array of uuids which the raw data is
+     *          requested
+     * @param  {Boolean} baseline: contains the baseline status
+     * @return {Array/Hash} data: returns the entire simulations.json file found on
+     *          config_file["file_location"][<baselines/ecms>]["simulations"]
+     *          and the index based on the index file defined at
+     *          config_file["file_location"][<baselines/ecms>]["index_map"]
+     */ 
     function get_data_by_id(id,baseline){
         json_file_path = ""
         json_file = {}
@@ -951,21 +1007,29 @@ function setup() {
             json_file_path = config_file["file_location"]["baselines"]["simulations"]
             index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
         }
+
         if (id.constructor === Array){
+            //if id is an array, then get each datapoint based on the index map
             full_json = get_simulations_json(baseline)
-            out_json = []
+            out_json = [] //stores output data
             for (var i = 0; i < id.length; i++) {
                 index = index_file["id"][id[i]]
                 out_json.push(full_json[index])
             }
             full_json = null //release memory
             return out_json
-        }else{
+        }else{ // if the Id is a string, then grab the single datapoint.
             index = index_file["id"][id]
             return JSON.parse(get_file(json_file_path))[index]
         }
     }
 
+    /**
+     * @param  {Boolean} baseline:
+     * @param  {String} building_type:
+     * @param  {String} city: 
+     * @return {Array/Hash} data
+     */
     function get_data_by_building_and_city(baseline,building_type,city){
         json_file = {}
         index_file = {}
