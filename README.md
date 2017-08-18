@@ -1,6 +1,8 @@
 # Parallel Coordinates Data Visualization for NECB-2011 QAQC simulations
 Creates a parallel coordinate plot for QAQC simulation data
 
+Full Preview: https://canmet-energy.github.io/parallel-coordinates
+
 The data is obtained from simulations.json which is produced by btap_results_extractor
 
 ### Requirements
