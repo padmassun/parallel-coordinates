@@ -399,7 +399,7 @@ function setup() {
                     if (dataItem != null) {
                         draw_pie_chart("#pieChart2", dataItem)
                         pieChartData = document.getElementById('pieChart2-data');
-                        pieChartData.src = get_file(e.target.getAttribute('data-url'));
+                        pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'));
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
                             this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
