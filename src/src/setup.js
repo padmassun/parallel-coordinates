@@ -991,9 +991,9 @@ function setup() {
      *          requested
      * @param  {Boolean} baseline: contains the baseline status
      * @return {Array/Hash} data: returns the entire simulations.json file found on
-     *          config_file["file_location"][<baselines/ecms>]["simulations"]
-     *          and the index based on the index file defined at
-     *          config_file["file_location"][<baselines/ecms>]["index_map"]
+     *           config_file["file_location"][<baselines/ecms>]["simulations"]
+     *           and the index based on the index file defined at
+     *           config_file["file_location"][<baselines/ecms>]["index_map"]
      */ 
     function get_data_by_id(id,baseline){
         json_file_path = ""
@@ -1025,10 +1025,17 @@ function setup() {
     }
 
     /**
-     * @param  {Boolean} baseline:
-     * @param  {String} building_type:
-     * @param  {String} city: 
-     * @return {Array/Hash} data
+     * This method reads the correct index file based on the baseline status, and
+     * grabs a list of ids from the index file based on the building type and city
+     * provided.
+     * 
+     * @param  {Boolean} baseline: true if search criteria is for baseline
+     * @param  {String} building_type: contains the option from the "Building Types" dropdown
+     * @param  {String} city: contains the option from the "City" dropdown
+     * @return {Array/Hash} data: returns the raw data from simulations.json file found on
+     *           config_file["file_location"][<baselines/ecms>]["simulations"]
+     *           and the building_type and city based on the index file/map defined at
+     *           config_file["file_location"][<baselines/ecms>]["index_map"]
      */
     function get_data_by_building_and_city(baseline,building_type,city){
         json_file = {}
@@ -1036,7 +1043,7 @@ function setup() {
 
         baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
         baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
-        
+        //get the correct simulations.json file and the index file based on the baseline status
         if(!baseline) {
             json_file_path = config_file["file_location"]["ecms"]["simulations"]
             index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
@@ -1044,77 +1051,109 @@ function setup() {
             json_file_path = config_file["file_location"]["baselines"]["simulations"]
             index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
         }
-        ids = []
+        ids = [] // stores a list of ID qhose data needs to be grabed
         if (building_type == "Select All"){
-            //console.log("building_type == Select All")
             if (city == "Select All"){
-                //console.log("city == Select All")
+                //if city and building type are "Select All" then grab the entire json file
                 return get_simulations_json(baseline)
-            }else{
+            }else{//case where all building types are selected for a single city
+                //grab building types form the index file (the method adds the "Select All" option)
                 all_building_types = get_all_building_type(baseline)
+                //itterate through all the building type keys in the index file and grab
+                //all the ids present
                 for (var i = 0; i < all_building_types.length; i++) {
+                    //skip "Select All", because it is not a building type
                     if (all_building_types[i] == "Select All"){
                         continue;
                     }
-                    //console.log(all_building_types[i])
-                    //console.log(index_file['datapoint'][all_building_types[i]][city])
-                    //ids.push(index_file['datapoint'][all_building_types[i]][city])
                     ids = ids.concat(index_file['datapoint'][all_building_types[i]][city])
                 }
-                //console.log("city != Select All")
-                //console.log(ids)
             }
 
-        }else{
-            //console.log("building_type != Select All")
-            if (city == "Select All"){
+        }else{//case: building_type != "Select All" 
+            if (city == "Select All"){//case for all the cities selected for a single building type
+                //grab city form the index file (the method adds the "Select All" option)
                 all_cities = get_all_cities(baseline)
+                //itterate through all the city keys in the index file and grab
+                //all the ids present
                 for (var i = 0; i < all_cities.length; i++) {
+                    //skip "Select All", because it is not a city
                     if (all_cities[i] == "Select All"){
                         continue;
                     }
-                    //console.log("building_type "+ building_type + "  city: " + all_cities[i])
-                    //console.log(index_file['datapoint'][building_type][all_cities[i]])
                     ids = ids.concat(index_file['datapoint'][building_type][all_cities[i]])
                 }
-                //console.log("city == Select All")
-                //console.log(ids)
-            }else{  
+            }else{// case: a city and a building type
+                //grab the id(s) from the index file
                 ids = index_file['datapoint'][building_type][city]
                 if (ids == null) {
                     console.log("datapoint for building_type: "+ building_type +"and City: "+ city + "was not found")
                 }
-                else{
-                    //console.log("city != Select All")
-                    //console.log(ids)
-                }
             }
         }
+        //call the method which returns data based on the id passed
         return get_data_by_id(ids,baseline)
     }
 
+    /**
+     * This method reads the correct index file based on the baseline status
+     * and grabs the list of cities present. It also adds the "Select All" if
+     * the baseline status is set to true.
+     *
+     * The index file location is found on
+     * config_file["file_location"][<baselines/ecms>]["index_map"]
+     *
+     * I did not include the "Select All" option for the ecm because it is 
+     * not relevant to compareall the cities in a single view
+     * 
+     * @param  {Boolean} baseline:  baseline status
+     * @return {Array} ids: contains a list of cities from the index file
+     */
     function get_all_cities(baseline){
-        if(!baseline) {
+        index_file = {} // stores the index file
+        //read the correct index file based on the baseline status.
+        if(!baseline) {//ecm status
             index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
-        } else {
+        } else { //baseline status
             index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+            //add "Select All" option
             index_file["cities"].sort().unshift(["Select All"])
         }
         return index_file["cities"]
     }
 
+    /**
+     * This method reads the correct index file based on the baseline status
+     * and grabs the list of building types present. It also adds the 
+     * "Select All" if the baseline status is set to true.
+     *
+     * The index file location is found on
+     * config_file["file_location"][<baselines/ecms>]["index_map"]
+     *
+     * I did not include the "Select All" option for the ecm because it is 
+     * not relevant to compareall the cities in a single view
+     * 
+     * @param  {Boolean} baseline:  baseline status
+     * @return {Array} ids: contains a list of building types from the index file
+     */
     function get_all_building_type(baseline){
-        if(!baseline) {
+        index_file = {} // stores the index file
+        //read the correct index file based on the baseline status.
+        if(!baseline) {//ecm status
             index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
-        } else {
+        } else { //baseline status
             index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
+            //add "Select All" option
             index_file["building_type"].sort().push(["Select All"])
         }
-
-        //console.log(index_file["building_type"])
         return index_file["building_type"]
     }
 
+    /**
+     * This method gets the baseline status based on the "Show ECMs" checkbox
+     * 
+     * @return {Boolean}
+     */
     function get_baseline_status(){
         if(document.getElementById('show_ecm').checked) {
             //console.log("baseline = false")
@@ -1125,6 +1164,10 @@ function setup() {
         }
     }
 
+    /**
+     * @param  {Hash} datapoint: contains a single raw datapoint
+     * @return {Boolean} baseline: baseline status
+     */
     function is_baseline(datapoint){
         if (datapoint['is_baseline'] == "true") {
             return true;
@@ -1133,42 +1176,61 @@ function setup() {
         }
     }
 
+    /**
+     * This method gets baseline datapoint based on the city andthe building given
+     * 
+     * @param  {String} building_type: Building Type
+     * @param  {String} city: City
+     * @return {Hash} datapoint: baseline datapoint
+     */
     function get_baseline_datapoint_by_bldg_and_city(building_type,city){
         return get_data_by_building_and_city(true,building_type,city)
     }
 
+    /**
+     * This method apphends the baseline datapoint to the given "input_datapoints"
+     * 
+     * @param  {Array} input_datapoints: Contains the full list of ecm datapoints
+     * @param  {String} building_type: Building Type
+     * @param  {String} city: City
+     * @return {Array} output_datapoints: full list of ecm datapoints + baseline 
+     *                      datapoint based on city and building type
+     */
     function append_baseline_to_ecm(input_datapoints, building_type, city){
-        json_file_path = ""
-        json_file = {}
-        index_file = {}
-        baseline_json_file_path = config_file["file_location"]["baselines"]["simulations"]
-        baseline_index_file = JSON.parse(get_file(config_file["file_location"]["baselines"]["index_map"]))
-
-        json_file_path = config_file["file_location"]["ecms"]["simulations"]
-        index_file = JSON.parse(get_file(config_file["file_location"]["ecms"]["index_map"]))
-        building_type = input_datapoints[0]['building_type']
-        city = input_datapoints[0]['geography']['city']
-        out = input_datapoints.concat(get_baseline_datapoint_by_bldg_and_city(building_type,city))
-        //console.log(out)
-        return out
+        return input_datapoints.concat(get_baseline_datapoint_by_bldg_and_city(building_type,city))
     }
 
+    /**
+     * This method generated dimensions for PC based on a single given datapoint.
+     *     This method also updates the datapoints based on the selection in "View Types"
+     *     dropdown menu. This value is matched with the config_file["views"][<view_option>].
+     *     All other y-axis titles are deleted (unless it contains "ECM").
+     * 
+     * @param  {Hash} data_point: A datapoint compatible with PC and SlikGrid
+     * @return {Hash} dimensions: processed dimensions for PC
+     */
     function get_dimensions(data_point){
         dimensions = generate_dimensions(data_point)
-        views = []
+        view_option = d3.select("#viewType").property("value")
+        views = [] //contains a list of y-axis titles assigned to the selected view in "View Types" dropdown
         command = "views = JSON.parse(JSON.stringify(config_file)).views[\"" + view_option + "\"]"
         //console.log(command)
         eval(command)
         //console.log(views)
         out = ["Building Type"]
+        //Adds "Building Type" axis if the "Building Types" dropdown value is "Select All"
         if (d3.select("#bldgType").property("value") == "Select All" && views.indexOf("Building Type") == -1){
             views.unshift("Building Type")
         }
         //console.log(views)
         //console.log(dimensions)
+        /**
+         * itterate through the keys of the dimensions and delete the keys whose
+         * title is not present in the config_file["views"][<view_option>]
+         */
         Object.keys(dimensions).forEach(function (dim) {
             //console.log(dim)
-
+            //delete key it it is not an ECM and if it is not present in config_file
             if (views.indexOf(dim) == -1 && dim.indexOf("(ECM)") == -1) {
                 eval("delete dimensions[\"" + dim + "\"]")
             }
@@ -1179,31 +1241,67 @@ function setup() {
         return dimensions
     }
 
+    /**
+     * This method is used to generate the dimensions used by the parallel 
+     * coordinates. This method will add on to the default dimensions present 
+     * in the config_file["dimensions"]. 
+     * 
+     * This method will itterate over all the 1st level keys of the "data_point" 
+     * and generate a hash for dimensions which just contains the title. 
+     * This method will set the y-axis' title by splitting the key name which is
+     * present as a CamelCase. This is mainly done to process ECM names, which 
+     * are baseed on the Class Names of the measures
+     * 
+     * For example: "reduce_Electric-EquipmentLoadsByPercentage [r_value] (ECM)" will be changed to
+     *              "Reduce Electric Equipment Loads By Percentage [r value] (ECM)"
+     *              
+     * The format for the dimensions are defined here
+     * https://github.com/syntagmatic/parallel-coordinates#parcoords_dimensions
+     * 
+     * @param  {Hash} data_point: sample datapoint which is used to generate the dimensions
+     * @return {Hash} out_dimensions: contains the dimensions for the 
+     */
     function generate_dimensions(data_point){
-
+        //grab default dimensions from the config file
         default_dimensions = JSON.parse(JSON.stringify(config_file)).dimensions
         console.log(default_dimensions)
-        out_dimensions = {}
+        out_dimensions = {} //contains the dimensions generated (just the titles)
+        //itterate 
         Object.keys(data_point).forEach(function (keys) {
             if(Object.keys(default_dimensions).indexOf(keys) == -1){
                 out_dimensions[keys] = {
                     title : split_camel_case(keys)
-                    //tickPadding : 5
+                    //"title":          //String label for dimension
+                    //"type":           //Possible values include: string, date and number. Detected types are 
+                                            //automatically populated by detectDimensions using **d3.parcoords.detectDimensionTypes**.
+                    //"ticks":          //Number of horizontal ticks to include on y axis
+                    //"tickValues":     //Array of values to display for tick labels
+                    //"orient":         //Orientation of ticks and tickValues(left or right of axis)
+                    //"innerTickSize":  //Length of the horizontal ticks in between the top and bottom
+                    //"outerTickSize":  //Length of the horizontal ticks at the top and bottom
+                    //"tickPadding":    //Pixels to pad the tick title from the innerTickSize
+                    //"yscale":         //Type of scale to use for the axis(log, linear, ordinal). 
+                                            //Reference D3 Scales "index": Integer position for ordering dimensions on the x axis
                 }
-                //console.log(split_camel_case(keys))
             }
         });
         //console.log(out_dimensions)
-        out_dimensions = $.extend({}, out_dimensions, default_dimensions, );
-        //out_dimensions.concat(default_dimensions)
 
+        //override the generated dimnesions with default dimensions 
+        out_dimensions = $.extend({}, out_dimensions, default_dimensions, );
         return out_dimensions
     }
 
+    /**
+     * Wraps the text in the HTML object
+     * @param  {Array} text: an Array of text HTML object
+     * @return {null}
+     */
     function wrap(text) {
-        width = 150
+        width = 150 //px max width of the text object
         //max = []
         text.each(function() {
+            //initialize variables
             var text = d3.select(this),
             words = text.text().split(/\s+/).reverse(),
             word,
@@ -1215,22 +1313,26 @@ function setup() {
             tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
             //console.log(words) 
             while (word = words.shift()) {
-              line.unshift(word);
-              tspan.text(line.join(" "));
-              if (tspan.node().getComputedTextLength() > width) {
-                lineNumber++
-                line.shift();
+                line.unshift(word);
                 tspan.text(line.join(" "));
-                line = [word];
-                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight * -1  + dy + "em").text(word);
+                if (tspan.node().getComputedTextLength() > width) {
+                    lineNumber++
+                    line.shift();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight * -1  + dy + "em").text(word);
+                }
             }
-        }
-        //max.push(lineNumber * lineHeight + dy)
-    });
-        //console.log(max)
-        //return max
+            //max.push(lineNumber * lineHeight + dy)
+        });
+            //console.log(max)
+            //return max
     }
 
+    /**
+     * @param  {String} str: contains the text which is to be split
+     * @return {String} returns a string split by camel case, "-", and "_"
+     */
     function split_camel_case(str){
         out = str
         return out.replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -1239,6 +1341,11 @@ function setup() {
         .replace(/^./, function(str){ return str.toUpperCase(); })
     }
 
+    /**
+     * Renders the tooltip in the toolbar when the ToolTip button is hovered
+     * 
+     * @return {null}
+     */
     function view_tooltip(){
         var path = d3.select('#Tooltip');
         //console.log(path)
