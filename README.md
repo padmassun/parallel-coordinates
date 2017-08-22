@@ -42,3 +42,13 @@ Next use your browser and go to `http://localhost:8080/` to access the Parallel 
 ## WARNINGS
 
 Make sure the file path of this repository does not contain any spaces.
+
+## Updating the PC hosted by GitHub Website
+
+In this root of this directory run the following code:
+
+```
+git subtree push --prefix src origin gh-pages
+```
+
+Source: https://gist.github.com/cobyism/4730490
