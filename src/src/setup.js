@@ -395,7 +395,12 @@ function setup() {
                     if (dataItem != null) {
                         draw_pie_chart("#pieChart1", dataItem)
                         pieChartData = document.getElementById('pieChart1-data');
-                        pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'));
+                        pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'))
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/",  "lib/")
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/",                 "lib/")
+                                                .replace("http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/",                  "lib/")
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/",                     "lib/")
+                                                .replace("http://dimplejs.org/dist/",                                           "lib/");
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
                             this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
@@ -407,7 +412,12 @@ function setup() {
                     if (dataItem != null) {
                         draw_pie_chart("#pieChart2", dataItem)
                         pieChartData = document.getElementById('pieChart2-data');
-                        pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'));
+                        pieChartData.srcdoc = get_file(e.target.getAttribute('data-url'))
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/",  "lib/")
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/",                 "lib/")
+                                                .replace("http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/",                  "lib/")
+                                                .replace("http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/",                     "lib/")
+                                                .replace("http://dimplejs.org/dist/",                                           "lib/");
                         //pieChartData.src = $(get_file(e.target.getAttribute('data-url')));
                         pieChartData.style = "width:100%;"
                         $('iframe').load(function () {
