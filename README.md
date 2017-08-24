@@ -39,16 +39,16 @@ docker run -it -d -p 8080:8080 -v `pwd`:/dataviz --restart=always nodeserver
 Next use your browser and go to `http://localhost:8080/` to access the Parallel coordinate plot
 
 
-## WARNINGS
+## Updating the PC Website hosted by GitHub 
 
-Make sure the file path of this repository does not contain any spaces.
-
-## Updating the PC hosted by GitHub Website
-
-In this root of this directory run the following code:
+After a commit to the master branch. run the following code from this root of this directory:
 
 ```
 git subtree push --prefix src origin gh-pages
 ```
 
 Source: https://gist.github.com/cobyism/4730490
+
+## WARNINGS
+
+Make sure the file path of this repository does not contain any spaces.
