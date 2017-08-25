@@ -1,7 +1,8 @@
 # Parallel Coordinates Data Visualization using External Repository
 
-## Parallel Coordinates config file
+To use external data source change the values of the "file_location", "title", "views" and the "dimensions" keys in the Parallel Coordinates config file (parallel_plots_config.json)
 
+## Parallel Coordinates config file
 
 ```javascript
 {   
@@ -174,18 +175,29 @@
         "Heat Rejection (GJ/m2)": "end_uses_eui.heat_rejection_gj_per_m2",
         "Water Systems (GJ/m2)": "end_uses_eui.water_systems_gj_per_m2"
     },
-
+    
+    /**
+     * "file_location" key contains the location of the important files which 
+     * are used by the PC datavoz.
+     */
     "file_location":{
-        "baselines": {
-            "root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-baselines/master",
+        "baselines": {//contains information about the baseline
+            //each values of the keycan be an absolute or relative path to the index.html file  
+            "root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-baselines/master", //do not include "/" in the end
             "simulations": "./data/baselines/min-simulations.json",
             "index_map": "./data/baselines/index_map.json"
         },
-        "ecms" : {
-            "root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-ecms/master",
+        "ecms" : { //contains information about the data used for the ecm view
+            //each values of the keycan be an absolute or relative path to the index.html file  
+            "root": "https://raw.githubusercontent.com/canmet-energy/necb-2011-ecms/master", //do not include "/" in the end
             "simulations": "./data/ecms/min-simulations.json",
             "index_map": "./data/ecms/index_map.json"
         },
+        //each value begins with a "/", and the full path of the file is defined by pre-pending the "root" location
+        //e.g. https://raw.githubusercontent.com/canmet-energy/necb-2011-ecms/master/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html
+        //$(building_type) will be replaced by the value of "Building Type" key in title
+        // $(epw_file) will be replaced by the value of "City" key in title
+        // $(id) will be replaced by "uuid" key in the simulations.json file
         "3d_model" : "/output/$(building_type)/$(epw_file)/3d_model/$(id)_3d.html",
         "eplus_table" : "/output/$(building_type)/$(epw_file)/eplus_table/$(id)-eplustbl.htm",
         "os_report" : "/output/$(building_type)/$(epw_file)/os_report/$(id)-os-report.html",
